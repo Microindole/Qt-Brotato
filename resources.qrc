@@ -1,8 +1,19 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="/">
+    <!-- 音频资源 -->
     <file>sounds/shoot.wav</file>
     <file>sounds/hit.wav</file>
     <file>sounds/backgound.wav</file>
     <file>sounds/push.wav</file>
+
+
+    <!-- 图片资源 -->
+    <!-- 人物 -->
+    <file>images/doctor.png</file> <!-- 医生 -->
+    <file>images/doushi.png</file> <!-- 斗士 -->
+    <file>images/duomianshou.png</file> <!-- 多面手 -->
+    <file>images/foot.png</file> <!-- 腿 -->
+    <file>images/gongniu.png</file> <!-- 公牛 -->
+    <file>images/quanneng.png</file> <!-- 全能 -->
 </qresource>
 </RCC>
