@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     , gameInitialized(false) // 初始化新变量
 {
     ui->setupUi(this);
+    setupAudio();  // 添加这行
     showStartScreen(); // 显示开始界面
     connectActions();
 }
@@ -74,6 +75,7 @@ void MainWindow::backToMenu()
         gameTimer->stop();
         enemySpawnTimer->stop();
         shootTimer->stop();
+        stopBackgroundMusic(); // 添加：停止背景音乐
     }
     
     // 清理游戏对象
@@ -180,6 +182,7 @@ void MainWindow::restartGame()
     frameCount = 0;
 
     gameRunning = true;
+    startBackgroundMusic(); // 添加：开始播放背景音乐
     ui->statusbar->showMessage("游戏开始！", 3000);
     updateUI();
 }
@@ -333,6 +336,7 @@ void MainWindow::shootBullets()
         Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
         gameScene->addItem(bullet);
         bullets.append(bullet);
+        playShootSound(); // 添加：播放射击音效
     }
 }
 
@@ -344,6 +348,7 @@ void MainWindow::checkCollisions()
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
             if ((*bulletIt)->collidesWithItem(*enemyIt)) {
                 (*enemyIt)->takeDamage(10); // 子弹伤害从12降低到10
+                playHitSound(); // 添加：播放击中音效
                 
                 if ((*enemyIt)->isDead()) {
                     gameScene->removeItem(*enemyIt);
@@ -374,6 +379,7 @@ void MainWindow::checkCollisions()
     for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
         if ((*enemyIt)->collidesWithItem(player)) {
             player->takeDamage((*enemyIt)->getDamage());
+            playHitSound(); // 添加：播放击中音效
             if (player->getHealth() <= 0) {
                 gameOver();
                 return;
@@ -435,6 +441,8 @@ void MainWindow::gameOver()
     gameTimer->stop();
     enemySpawnTimer->stop();
     shootTimer->stop();
+    stopBackgroundMusic(); // 添加：停止背景音乐
+    playGameOverSound();   // 添加：播放游戏结束音效
 
     QMessageBox::StandardButton reply = QMessageBox::question(this, "游戏结束",
         QString("土豆兄弟倒下了！\n\n你的分数: %1\n到达波次: %2\n\n是否重新开始?").arg(score).arg(wave),
@@ -484,4 +492,62 @@ void MainWindow::showAbout()
     if (gameRunning && !wasPaused) {
         pauseGame(); // 恢复游戏
     }
+}
+
+void MainWindow::setupAudio()
+{
+    // 设置背景音乐
+    backgroundMusic = new QMediaPlayer(this);
+    backgroundAudioOutput = new QAudioOutput(this);
+    backgroundMusic->setAudioOutput(backgroundAudioOutput);
+    backgroundMusic->setSource(QUrl("qrc:/sounds/backgound.wav"));
+    backgroundAudioOutput->setVolume(0.3); // 设置音量
+
+    // 设置射击音效
+    shootSound = new QMediaPlayer(this);
+    shootAudioOutput = new QAudioOutput(this);
+    shootSound->setAudioOutput(shootAudioOutput);
+    shootSound->setSource(QUrl("qrc:/sounds/shoot.wav"));
+    
+    // 设置击中音效
+    hitSound = new QMediaPlayer(this);
+    hitAudioOutput = new QAudioOutput(this);
+    hitSound->setAudioOutput(hitAudioOutput);
+    hitSound->setSource(QUrl("qrc:/sounds/hit.wav"));
+    hitAudioOutput->setVolume(0.4); // 新增：降低攻击音效的音量
+    
+    // 设置游戏结束音效
+    gameOverSound = new QMediaPlayer(this);
+    gameOverAudioOutput = new QAudioOutput(this);
+    gameOverSound->setAudioOutput(gameOverAudioOutput);
+    gameOverSound->setSource(QUrl("qrc:/sounds/push.wav"));
+}
+
+void MainWindow::playShootSound()
+{
+    shootSound->setPosition(0);
+    shootSound->play();
+}
+
+void MainWindow::playHitSound()
+{
+    hitSound->setPosition(0);
+    hitSound->play();
+}
+
+void MainWindow::playGameOverSound()
+{
+    gameOverSound->setPosition(0);
+    gameOverSound->play();
+}
+
+void MainWindow::startBackgroundMusic()
+{
+    backgroundMusic->setLoops(QMediaPlayer::Infinite);
+    backgroundMusic->play();
+}
+
+void MainWindow::stopBackgroundMusic()
+{
+    backgroundMusic->stop();
 }

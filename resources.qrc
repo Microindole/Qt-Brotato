@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+    <file>sounds/shoot.wav</file>
+    <file>sounds/hit.wav</file>
+    <file>sounds/backgound.wav</file>
+    <file>sounds/push.wav</file>
+</qresource>
+</RCC>

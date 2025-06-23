@@ -11,6 +11,8 @@
 #include <QSet>
 #include <QList>
 #include <QElapsedTimer>
+#include <QMediaPlayer>
+#include <QAudioOutput>
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
@@ -64,6 +66,16 @@ private:
     QTimer *shootTimer;
     QElapsedTimer fpsTimer;
     
+    // 音频组件
+    QMediaPlayer *backgroundMusic;
+    QAudioOutput *backgroundAudioOutput;
+    QMediaPlayer *shootSound;
+    QAudioOutput *shootAudioOutput;
+    QMediaPlayer *hitSound;
+    QAudioOutput *hitAudioOutput;
+    QMediaPlayer *gameOverSound;
+    QAudioOutput *gameOverAudioOutput;
+    
     // 游戏状态
     QSet<int> pressedKeys;
     int score;
@@ -75,6 +87,7 @@ private:
     bool gameInitialized; // 新增：标记游戏是否已初始化
     
     void setupGame();
+    void setupAudio();  // 新增音频设置函数
     void movePlayer();
     void checkCollisions();
     void cleanupObjects();
@@ -83,6 +96,13 @@ private:
     void connectActions();
     void showStartScreen(); // 新增：显示开始界面
     void showGameScreen();  // 新增：显示游戏界面
+    
+    // 音频播放函数
+    void playShootSound();
+    void playHitSound();
+    void playGameOverSound();
+    void startBackgroundMusic();
+    void stopBackgroundMusic();
 };
 
 #endif // MAINWINDOW_H
