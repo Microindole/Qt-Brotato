@@ -3,7 +3,6 @@
 
 #include <QGraphicsEllipseItem>
 #include <QPainter>
-#include <QStyleOptionGraphicsItem>
 
 class Player : public QGraphicsEllipseItem
 {
@@ -12,9 +11,10 @@ public:
     
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
+    float getSpeed() const { return speed; }
+    
     void takeDamage(int damage);
     void heal(int amount);
-    void resetHealth();
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -22,6 +22,7 @@ protected:
 private:
     int health;
     int maxHealth;
+    float speed;  // 确保这个成员变量存在
 };
 
 #endif // PLAYER_H

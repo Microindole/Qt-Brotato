@@ -174,8 +174,8 @@ void MainWindow::restartGame()
 
     // 启动定时器 - 调整初始速度
     gameTimer->start(16); // 约60FPS
-    enemySpawnTimer->start(2500); // 初始生成速度稍微放缓
-    shootTimer->start(500);       // 初始射速稍微降低
+    enemySpawnTimer->start(2000); // 敌人生成速度稍快一些，从2500降到2000
+    shootTimer->start(600);       // 射击频率降低，从500增加到600
     fpsTimer.start();
     frameCount = 0;
 
@@ -256,7 +256,7 @@ void MainWindow::updateGame()
 void MainWindow::movePlayer()
 {
     QPointF pos = player->pos();
-    const float speed = 4.0f;
+    const float speed = 2.8f; // 移动速度从3.5降低到2.8
 
     if (pressedKeys.contains(Qt::Key_W) || pressedKeys.contains(Qt::Key_Up))    pos.setY(pos.y() - speed);
     if (pressedKeys.contains(Qt::Key_S) || pressedKeys.contains(Qt::Key_Down))  pos.setY(pos.y() + speed);
@@ -329,7 +329,7 @@ void MainWindow::shootBullets()
         }
     }
 
-    if (nearestEnemy && minDistance < 400) { // 射程限制
+    if (nearestEnemy && minDistance < 300) { // 射程从400降低到300
         Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
         gameScene->addItem(bullet);
         bullets.append(bullet);
@@ -343,13 +343,13 @@ void MainWindow::checkCollisions()
         bool bulletHit = false;
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
             if ((*bulletIt)->collidesWithItem(*enemyIt)) {
-                (*enemyIt)->takeDamage(12); // 使用更低的伤害值
+                (*enemyIt)->takeDamage(10); // 子弹伤害从12降低到10
                 
                 if ((*enemyIt)->isDead()) {
                     gameScene->removeItem(*enemyIt);
                     delete *enemyIt;
                     enemyIt = enemies.erase(enemyIt);
-                    score += 5; // 分数奖励降低
+                    score += 5;
                     enemiesKilled++;
                 } else {
                     ++enemyIt;
@@ -401,17 +401,17 @@ void MainWindow::cleanupObjects()
 
 void MainWindow::updateWave()
 {
-    // 更温和的波次进程
-    if (enemiesKilled >= wave * 6 + 8) { // 每波需要击败的敌人数量稍微增加
+    // 更温和的波次进程，但对玩家更有挑战性
+    if (enemiesKilled >= wave * 5 + 6) { // 每波需要击败的敌人数量减少，让波次进展更快
         wave++;
         enemiesKilled = 0;
         
-        // 敌人生成速度提升更温和
-        int spawnInterval = qMax(800, 2500 - (wave - 1) * 120); // 最快生成间隔提高
+        // 敌人生成速度提升稍快一些
+        int spawnInterval = qMax(600, 2000 - (wave - 1) * 140); // 最快生成间隔降低
         enemySpawnTimer->setInterval(spawnInterval);
         
-        // 玩家射速提升更温和
-        int shootInterval = qMax(200, 500 - (wave - 1) * 12); // 最快射速限制
+        // 玩家射速提升更缓慢
+        int shootInterval = qMax(300, 600 - (wave - 1) * 10); // 射速提升更慢
         shootTimer->setInterval(shootInterval);
         
         ui->statusbar->showMessage(QString("第 %1 波敌人来袭！").arg(wave), 3000);
