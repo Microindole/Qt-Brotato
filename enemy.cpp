@@ -5,26 +5,52 @@
 #include <cmath>
 
 Enemy::Enemy(int waveNumber)
-    : QGraphicsEllipseItem(-12, -12, 24, 24)
+    : QGraphicsEllipseItem()
     , waveLevel(waveNumber)
 {
-    // 根据波数动态调整敌人属性 - 数值调小
-    speed = 0.6f + QRandomGenerator::global()->bounded(100) / 300.0f + (waveNumber - 1) * 0.05f; // 基础速度降低，成长减缓
-    damage = 8 + (waveNumber - 1) * 2; // 基础伤害降低，每波增长减少
-    maxHealth = 50 + (waveNumber - 1) * 10; // 基础血量降低，每波增长减少
+    // 1. 随机选择一个敌人类型
+    type = (QRandomGenerator::global()->bounded(2) == 0) ? Type1 : Type2;
+
+    // 2. 根据类型加载不同的图片和设置不同的属性
+    if (type == Type1) {
+        pixmap.load(":/images/common1.png");
+        // 类型1: 基础型，血厚攻高
+        speed = 0.7f + (waveNumber - 1) * 0.05f;
+        damage = 10 + (waveNumber - 1) * 2;
+        maxHealth = 60 + (waveNumber - 1) * 10;
+    } else { // Type2
+        pixmap.load(":/images/common2.png");
+        // 类型2: 速度更快，但更脆弱
+        speed = 1.0f + (waveNumber - 1) * 0.07f;
+        damage = 8 + (waveNumber - 1) * 2;
+        maxHealth = 45 + (waveNumber - 1) * 8;
+    }
     health = maxHealth;
     
-    // 限制最大属性，防止后期过于变态
-    speed = qMin(speed, 2.0f);      // 最大速度降低
-    damage = qMin(damage, 30);      // 最大伤害降低
-    maxHealth = qMin(maxHealth, 150); // 最大血量降低
+    // 限制最大属性
+    speed = qMin(speed, 2.5f);
+    damage = qMin(damage, 40);
+    maxHealth = qMin(maxHealth, 200);
     health = maxHealth;
+
+    // 3. **关键修复**: 设置item的矩形区域用于碰撞检测
+    // 使用图片尺寸来定义碰撞区域，并将原点设置在中心
+    if (!pixmap.isNull()) {
+        setRect(-pixmap.width() / 2.0, -pixmap.height() / 2.0, pixmap.width(), pixmap.height());
+    }
+
+    // 为动画设置一个随机的起始点，防止所有敌人动作同步
+    animationCounter = QRandomGenerator::global()->generateDouble() * 2 * 3.14159;
 }
 
 QRectF Enemy::boundingRect() const
 {
-    // 扩大边界以包含血条
-    return QRectF(-17, -20, 34, 40);
+    // 获取由 setRect() 设置的核心碰撞矩形
+    QRectF coreRect = rect(); 
+    // 为动画的最大缩放（5%）和血条（10像素）留出额外空间
+    qreal extraW = coreRect.width() * 0.05;
+    qreal extraH = coreRect.height() * 0.05;
+    return coreRect.adjusted(-extraW, -extraH - 10, extraW, extraH); 
 }
 
 void Enemy::moveTowards(const QPointF &target)
@@ -44,6 +70,16 @@ void Enemy::takeDamage(int dmg)
 {
     health -= dmg;
     if (health < 0) health = 0;
+    update(); // 受伤时立即更新视觉表现（如血条）
+}
+
+void Enemy::advance(int phase)
+{
+    if (phase == 0) return;
+
+    // 更新动画计数器以产生平滑的“呼吸”效果
+    animationCounter += 0.08; // 这个值可以调整动画速度
+    // update() 会被 GameWidget 中的 gameScene->advance() 自动调用，这里无需手动调用
 }
 
 void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -51,46 +87,35 @@ void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     Q_UNUSED(option)
     Q_UNUSED(widget)
     
-    // 绘制敌人主体
-    painter->setBrush(QBrush(QColor(220, 20, 20)));
-    painter->setPen(QPen(Qt::darkRed, 2));
-    painter->drawEllipse(-12, -12, 24, 24);
+    if (pixmap.isNull()) return;
+
+    // --- 计算动画缩放 ---
+    // 使用 sin 函数进行水平缩放 (拉伸和收缩)
+    qreal scaleX = 1.0 + 0.05 * sin(animationCounter);
+    // 使用反向的 sin 进行垂直缩放 (压缩和拉伸)，产生更逼真的呼吸/挤压效果
+    qreal scaleY = 1.0 - 0.05 * sin(animationCounter);
     
-    // 绘制触手
-    painter->setPen(QPen(Qt::darkRed, 2));
-    for (int i = 0; i < 8; i++) {
-        float angle = i * 45.0f * M_PI / 180.0f;
-        float x1 = 12 * cos(angle);
-        float y1 = 12 * sin(angle);
-        float x2 = 16 * cos(angle);
-        float y2 = 16 * sin(angle);
-        painter->drawLine(x1, y1, x2, y2);
-    }
+    QRectF originalRect = rect(); // 这是碰撞框
+    qreal newWidth = originalRect.width() * scaleX;
+    qreal newHeight = originalRect.height() * scaleY;
+    // 计算以中心为原点的、用于绘制的缩放后的矩形
+    QRectF scaledRect(-newWidth / 2.0, -newHeight / 2.0, newWidth, newHeight);
+
+    // 在缩放后的矩形内绘制敌人图像
+    painter->drawPixmap(scaledRect, pixmap, pixmap.rect());
     
-    // 绘制愤怒的眼睛
-    painter->setBrush(QBrush(Qt::white));
-    painter->setPen(QPen(Qt::black, 1));
-    painter->drawEllipse(-6, -6, 4, 4);
-    painter->drawEllipse(2, -6, 4, 4);
-    
-    painter->setBrush(QBrush(Qt::red));
-    painter->setPen(Qt::NoPen);
-    painter->drawEllipse(-5, -5, 2, 2);
-    painter->drawEllipse(3, -5, 2, 2);
-    
-    // 绘制愤怒的嘴巴
-    painter->setPen(QPen(Qt::black, 2));
-    painter->drawLine(-4, 2, 4, 2);
-    painter->drawLine(-2, 2, -2, 6);
-    painter->drawLine(0, 2, 0, 6);
-    painter->drawLine(2, 2, 2, 6);
-    
+    // --- 绘制血条 ---
+    // 血条位置跟随动画上下浮动，但自身大小保持不变，看起来更稳定
+    qreal healthBarY = scaledRect.top() - 8;
+    qreal healthBarWidth = originalRect.width() * 0.9;
+    qreal healthBarX = -healthBarWidth / 2.0;
+
     // 绘制血条背景
     painter->setBrush(QBrush(Qt::black));
     painter->setPen(QPen(Qt::white, 1));
-    painter->drawRect(-15, -18, 30, 4);
+    painter->drawRect(healthBarX, healthBarY, healthBarWidth, 5);
     
-    // 绘制血条
+    // 绘制血条前景
     if (health > 0) {
         float healthPercent = static_cast<float>(health) / maxHealth;
         QColor healthColor;
@@ -104,6 +129,6 @@ void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         
         painter->setBrush(QBrush(healthColor));
         painter->setPen(Qt::NoPen);
-        painter->drawRect(-14, -17, static_cast<int>(28 * healthPercent), 2);
+        painter->drawRect(healthBarX + 1, healthBarY + 1, (healthBarWidth - 2) * healthPercent, 3);
     }
 }

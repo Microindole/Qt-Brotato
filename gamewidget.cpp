@@ -188,6 +188,9 @@ void GameWidget::updateGame()
     updateWave();
     updateUI();
 
+    // 调用此函数来驱动所有 item 的 advance() 方法，从而实现动画
+    gameScene->advance(); 
+
     frameCount++;
     if (fpsTimer.elapsed() > 1000) {
         float fps = frameCount / (fpsTimer.elapsed() / 1000.0f);
