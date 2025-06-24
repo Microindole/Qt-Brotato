@@ -29,6 +29,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         menu.ui menu.h menu.cpp
         gamewidget.ui gamewidget.h gamewidget.cpp
         resources.qrc
+        pause.h pause.cpp pause.ui
     )
 
 else()

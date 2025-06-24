@@ -11,6 +11,7 @@ GameWidget::GameWidget(QWidget *parent)
     , ui(new Ui::GameWidget)
     , gameScene(nullptr)
     , player(nullptr)
+    , pauseWidget(nullptr)  
     , gameTimer(nullptr)
     , enemySpawnTimer(nullptr)
     , shootTimer(nullptr)
@@ -32,6 +33,17 @@ GameWidget::GameWidget(QWidget *parent)
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::StrongFocus);
+    
+    // 创建暂停界面
+    pauseWidget = new Pause(this);
+    pauseWidget->hide();
+    
+    // 连接暂停界面的
+    connect(pauseWidget, &Pause::continueGame, this, &GameWidget::onContinueGame);
+    connect(pauseWidget, &Pause::restartGame, this, &GameWidget::onRestartFromPause);
+    connect(pauseWidget, &Pause::endRun, this, &GameWidget::onEndRun);
+    connect(pauseWidget, &Pause::openSettings, this, &GameWidget::onOpenSettings);
+    connect(pauseWidget, &Pause::backToMenu, this, &GameWidget::onBackToMenu);
 }
 
 GameWidget::~GameWidget()
@@ -90,12 +102,31 @@ void GameWidget::setupGame()
 void GameWidget::restartGame()
 {
     gameRunning = false;
+    gamePaused = false; // 添加这行，确保重启时暂停状态被重置
 
     if (player) {
         gameScene->removeItem(player);
         delete player;
     }
     player = new Player();
+
+    // 清理现有的敌人和子弹
+    for (Enemy* enemy : enemies) {
+        gameScene->removeItem(enemy);
+        delete enemy;
+    }
+    enemies.clear();
+    
+    for (Bullet* bullet : bullets) {
+        gameScene->removeItem(bullet);
+        delete bullet;
+    }
+    bullets.clear();
+
+    // 重置游戏数据
+    score = 0;
+    wave = 1;
+    enemiesKilled = 0;
 
     // 4. 设置固定的地图大小 (例如 1920x1080)
     gameScene->setSceneRect(0, 0, 1920, 1080);
@@ -140,6 +171,87 @@ void GameWidget::keyReleaseEvent(QKeyEvent *event)
     QWidget::keyReleaseEvent(event);
 }
 
+void GameWidget::pauseGame()
+{
+    if (!gameRunning) return;
+
+    if (!gamePaused) {
+        // 暂停游戏
+        gamePaused = true;
+        gameTimer->stop();
+        enemySpawnTimer->stop();
+        shootTimer->stop();
+        stopBackgroundMusic();
+        showPauseMenu();
+    }
+}
+
+void GameWidget::showPauseMenu()
+{
+    if (player) {
+        pauseWidget->updateStats(player); // 在显示前更新属性
+    }
+
+    // 设置暂停界面为全屏覆盖
+    pauseWidget->resize(this->size());
+    pauseWidget->move(0, 0);
+    pauseWidget->show();
+    pauseWidget->raise();  // 确保暂停界面在最上层
+    
+    // 暂停界面不应该接受键盘焦点，让GameWidget保持焦点
+    pauseWidget->setFocusPolicy(Qt::NoFocus);
+}
+
+void GameWidget::hidePauseMenu()
+{
+    pauseWidget->hide();
+}
+
+void GameWidget::onContinueGame()
+{
+    if (gamePaused) {
+        gamePaused = false;
+        hidePauseMenu();
+        gameTimer->start(16);
+        enemySpawnTimer->start(2000); // 确保使用正确的间隔
+        shootTimer->start(600);       // 确保使用正确的间隔
+        startBackgroundMusic();
+        fpsTimer.start();
+        setFocus();  // 重新获取焦点以接收键盘事件
+    }
+}
+
+void GameWidget::onRestartFromPause()
+{
+    hidePauseMenu();
+    restartGame();
+    setFocus();
+}
+
+void GameWidget::onEndRun()
+{
+    hidePauseMenu();
+    gameOver();
+}
+
+void GameWidget::onOpenSettings()
+{
+    // 这里可以实现设置界面的逻辑
+    // 暂时显示一个消息框
+    QMessageBox::information(this, "设置", "设置功能待实现");
+}
+
+void GameWidget::onBackToMenu()
+{
+    hidePauseMenu();
+    gameRunning = false;
+    gameTimer->stop();
+    enemySpawnTimer->stop();
+    shootTimer->stop();
+    stopBackgroundMusic();
+    emit backToMenuRequested();
+}
+
 void GameWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
@@ -147,26 +259,12 @@ void GameWidget::resizeEvent(QResizeEvent *event)
         // 5. 窗口大小改变时，重新调整视图以适应固定的地图
         ui->gameView->fitInView(gameScene->sceneRect(), Qt::KeepAspectRatio);
     }
-}
-
-void GameWidget::pauseGame()
-{
-    if (!gameRunning) return;
-
-    gamePaused = !gamePaused;
-    if (gamePaused) {
-        gameTimer->stop();
-        enemySpawnTimer->stop();
-        shootTimer->stop();
-        stopBackgroundMusic();
-        QMessageBox::information(this, "游戏暂停", "游戏已暂停。按 OK 或 ESC 继续。");
-        // After the dialog is closed, resume the game
-        gamePaused = false;
-        gameTimer->start(16);
-        enemySpawnTimer->start();
-        shootTimer->start();
-        startBackgroundMusic();
-        fpsTimer.start();
+    
+    // 如果暂停界面正在显示，重新居中
+    if (pauseWidget && pauseWidget->isVisible()) {
+        int x = (this->width() - pauseWidget->width()) / 2;
+        int y = (this->height() - pauseWidget->height()) / 2;
+        pauseWidget->move(x, y);
     }
 }
 
@@ -378,18 +476,19 @@ void GameWidget::setupAudio()
     backgroundAudioOutput = new QAudioOutput(this);
     backgroundMusic->setAudioOutput(backgroundAudioOutput);
     backgroundMusic->setSource(QUrl("qrc:/sounds/background.wav"));
-    backgroundAudioOutput->setVolume(0.3);
+    backgroundAudioOutput->setVolume(0.7);
 
     shootSound = new QMediaPlayer(this);
     shootAudioOutput = new QAudioOutput(this);
     shootSound->setAudioOutput(shootAudioOutput);
     shootSound->setSource(QUrl("qrc:/sounds/shoot.wav"));
-    
+    shootAudioOutput->setVolume(0.02);
+
     hitSound = new QMediaPlayer(this);
     hitAudioOutput = new QAudioOutput(this);
     hitSound->setAudioOutput(hitAudioOutput);
     hitSound->setSource(QUrl("qrc:/sounds/hit.wav"));
-    hitAudioOutput->setVolume(0.4);
+    hitAudioOutput->setVolume(0.02);
     
     gameOverSound = new QMediaPlayer(this);
     gameOverAudioOutput = new QAudioOutput(this);

@@ -13,6 +13,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "pause.h"  
 
 namespace Ui {
 class GameWidget;
@@ -44,6 +45,13 @@ private slots:
     void restartGame();
     void showControls();
     void showAbout();
+    
+    // 暂停界面相关槽函数
+    void onContinueGame();
+    void onRestartFromPause();
+    void onEndRun();
+    void onOpenSettings();
+    void onBackToMenu();
 
 private:
     void setupGame();
@@ -55,6 +63,8 @@ private:
     void updateWave();
     void updateUI();
     void gameOver();
+    void showPauseMenu();    // 显示暂停菜单
+    void hidePauseMenu();    // 隐藏暂停菜单
     
     // 音频函数
     void playShootSound();
@@ -70,6 +80,7 @@ private:
     Player *player;
     QList<Enemy*> enemies;
     QList<Bullet*> bullets;
+    Pause *pauseWidget;  // 暂停界面
 
     // 定时器
     QTimer *gameTimer;
