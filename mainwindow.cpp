@@ -29,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 默认显示菜单
     showMenuScreen();
+
+    // 设置窗口为全屏显示
+    showFullScreen();
 }
 
 MainWindow::~MainWindow()

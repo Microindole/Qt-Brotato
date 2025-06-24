@@ -1,9 +1,10 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
-#include <QApplication>
-#include <QMessageBox>
+#include <QKeyEvent>
 #include <QRandomGenerator>
-#include <cmath>
+#include <QMessageBox>
+#include <QBrush>   // 1. 包含 QBrush 头文件
+#include <QPixmap>  // 2. 包含 QPixmap 头文件
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
@@ -58,6 +59,23 @@ void GameWidget::setupGame()
     gameScene = new QGraphicsScene(this);
     ui->gameView->setScene(gameScene);
 
+    // 3. 设置地图背景图片
+    // 提示: 您需要将名为 "game_background.png" 的图片添加到您的资源文件 (.qrc) 中
+    QPixmap bgPixmap(":/images/map.png");
+    if (!bgPixmap.isNull()) {
+        // 将图片设置为场景背景，如果图片尺寸不匹配，它会被平铺
+        gameScene->setBackgroundBrush(QBrush(bgPixmap));
+    } else {
+        // 如果图片加载失败，使用一个深灰色作为后备
+        gameScene->setBackgroundBrush(QBrush(QColor(40, 40, 40)));
+    }
+
+    // 确保视图没有边框和滚动条
+    ui->gameView->setFrameShape(QFrame::NoFrame);
+    ui->gameView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->gameView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->gameView->setStyleSheet("background: transparent; border: 0px"); // 使视图背景透明以显示场景背景
+
     gameTimer = new QTimer(this);
     enemySpawnTimer = new QTimer(this);
     shootTimer = new QTimer(this);
@@ -76,24 +94,20 @@ void GameWidget::restartGame()
     if (player) {
         gameScene->removeItem(player);
         delete player;
-        player = nullptr;
     }
-    qDeleteAll(enemies);
-    enemies.clear();
-    qDeleteAll(bullets);
-    bullets.clear();
-
-    score = 0;
-    wave = 1;
-    enemiesKilled = 0;
-    gamePaused = false;
-    pressedKeys.clear();
-
     player = new Player();
-    player->setPos(ui->gameView->width() / 2.0, ui->gameView->height() / 2.0);
+
+    // 4. 设置固定的地图大小 (例如 1920x1080)
+    gameScene->setSceneRect(0, 0, 1920, 1080);
+
+    // 将玩家放置在地图中心
+    player->setPos(gameScene->width() / 2.0, gameScene->height() / 2.0);
     gameScene->addItem(player);
 
-    gameTimer->start(16);
+    // 确保视图内容适应窗口大小，并保持宽高比
+    ui->gameView->fitInView(gameScene->sceneRect(), Qt::KeepAspectRatio);
+
+    gameTimer->start(16); // ~60 FPS
     enemySpawnTimer->start(2000);
     shootTimer->start(600);
     fpsTimer.start();
@@ -130,7 +144,8 @@ void GameWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     if (gameScene) {
-        gameScene->setSceneRect(0, 0, ui->gameView->width() - 2, ui->gameView->height() - 2);
+        // 5. 窗口大小改变时，重新调整视图以适应固定的地图
+        ui->gameView->fitInView(gameScene->sceneRect(), Qt::KeepAspectRatio);
     }
 }
 

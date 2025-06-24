@@ -22,5 +22,14 @@
     <file>images/charge.png</file> <!-- 冲锋怪 -->
     <file>images/remote.png</file> <!-- 远程怪 -->
     <file>images/boss.png</file> <!-- Boss怪 -->
+
+    <!-- 界面 -->
+    <file>images/brotato_char.png</file> <!-- Brotato角色图片 -->
+    <file>images/brotato_logo.png</file> <!-- Brotato背景图片 -->
+    <file>images/menu_background.png</file> <!-- Brotato界面图片 -->
+
+    <!-- 地图 -->
+    <file>images/map.png</file> <!-- 地图 -->
+
 </qresource>
 </RCC>

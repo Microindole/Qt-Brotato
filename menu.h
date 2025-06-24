@@ -20,7 +20,6 @@ signals:
     void exitGameRequested();  // 发送退出游戏信号
 
 private slots:
-    void showHelp();
 
 private:
     Ui::Menu *ui;
