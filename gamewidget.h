@@ -14,7 +14,7 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "pause.h"
-#include "settings.h" 
+#include "settings.h" // 添加
 
 namespace Ui {
 class GameWidget;

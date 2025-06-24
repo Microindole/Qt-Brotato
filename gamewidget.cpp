@@ -25,7 +25,7 @@ GameWidget::GameWidget(QWidget *parent)
     , wave(1)
     , enemiesKilled(0)
     , currentMusicVolume(0.7f) // 初始化音乐音量
-    , currentSfxVolume(0.02f)   // 初始化音效音量 (100% 对应 0.02)
+    , currentSfxVolume(0.2f)   // 初始化音效音量
     , gameRunning(false)
     , gamePaused(false)
     , frameCount(0)

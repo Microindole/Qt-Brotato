@@ -3,6 +3,7 @@
 
 #include <QGraphicsEllipseItem>
 #include <QPainter>
+#include <QPixmap>
 
 class Player : public QGraphicsEllipseItem
 {
@@ -30,6 +31,11 @@ public:
     void gainExperience(int exp);
     void levelUp();
     void regenerateHealth(); // 生命再生逻辑
+    void setFacingDirection(bool right); // <-- 新增：设置朝向的方法
+
+    // 动画相关
+    void advance(int phase) override;
+    QRectF boundingRect() const override;
     
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
@@ -48,6 +54,12 @@ private:
     int attackPower;        // 攻击力
     int armor;              // 护甲（减伤百分比）
     
+    // 动画相关
+    QPixmap bodyPixmap;     // 身体图片
+    QPixmap footPixmap;     // 脚部图片
+    qreal animationCounter; // 动画计数器
+    bool facingRight; // <-- 新增：记录当前朝向 (true=右, false=左)
+
     // 辅助函数
     int calculateExpForLevel(int level); // 计算升级所需经验
 };
