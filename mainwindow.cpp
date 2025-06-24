@@ -500,7 +500,7 @@ void MainWindow::setupAudio()
     backgroundMusic = new QMediaPlayer(this);
     backgroundAudioOutput = new QAudioOutput(this);
     backgroundMusic->setAudioOutput(backgroundAudioOutput);
-    backgroundMusic->setSource(QUrl("qrc:/sounds/backgound.wav"));
+    backgroundMusic->setSource(QUrl("qrc:/sounds/background.wav"));
     backgroundAudioOutput->setVolume(0.3); // 设置音量
 
     // 设置射击音效

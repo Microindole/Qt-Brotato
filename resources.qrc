@@ -3,7 +3,7 @@
     <!-- 音频资源 -->
     <file>sounds/shoot.wav</file>
     <file>sounds/hit.wav</file>
-    <file>sounds/backgound.wav</file>
+    <file>sounds/background.wav</file>
     <file>sounds/push.wav</file>
 
 
