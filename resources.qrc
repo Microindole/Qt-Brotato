@@ -15,5 +15,12 @@
     <file>images/foot.png</file> <!-- 腿 -->
     <file>images/gongniu.png</file> <!-- 公牛 -->
     <file>images/quanneng.png</file> <!-- 全能 -->
+
+    <!-- 怪物 -->
+    <file>images/common1.png</file> <!-- 普通怪物1 -->
+    <file>images/common2.png</file> <!-- 普通怪物2 -->
+    <file>images/charge.png</file> <!-- 冲锋怪 -->
+    <file>images/remote.png</file> <!-- 远程怪 -->
+    <file>images/boss.png</file> <!-- Boss怪 -->
 </qresource>
 </RCC>
