@@ -13,7 +13,8 @@
 #include "player.h"
 #include "enemy.h"
 #include "bullet.h"
-#include "pause.h"  
+#include "pause.h"
+#include "settings.h" 
 
 namespace Ui {
 class GameWidget;
@@ -53,6 +54,11 @@ private slots:
     void onOpenSettings();
     void onBackToMenu();
 
+    // 新增设置相关的槽函数
+    void onMusicVolumeChanged(float volume);
+    void onSfxVolumeChanged(float volume);
+    void onSettingsClosed();
+
 private:
     void setupGame();
     void setupAudio();
@@ -73,6 +79,10 @@ private:
     void startBackgroundMusic();
     void stopBackgroundMusic();
 
+    // 新增音量控制方法
+    void setMusicVolume(float volume);
+    void setSfxVolume(float volume);
+
     Ui::GameWidget *ui;
     
     // 游戏组件
@@ -80,7 +90,8 @@ private:
     Player *player;
     QList<Enemy*> enemies;
     QList<Bullet*> bullets;
-    Pause *pauseWidget;  // 暂停界面
+    Pause *pauseWidget;
+    Settings *settingsWidget; // 添加
 
     // 定时器
     QTimer *gameTimer;
@@ -103,6 +114,8 @@ private:
     int score;
     int wave;
     int enemiesKilled;
+    float currentMusicVolume; // 添加
+    float currentSfxVolume;   // 添加
     bool gameRunning;
     bool gamePaused;
     int frameCount;

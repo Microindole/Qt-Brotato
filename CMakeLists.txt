@@ -27,9 +27,23 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         enemy.h enemy.cpp
         player.h player.cpp
         menu.ui menu.h menu.cpp
-        gamewidget.ui gamewidget.h gamewidget.cpp
+        gamewidget.ui gamewidget.h
+        
+        # 主游戏逻辑文件
+        gamewidget.cpp
+        
+        # 新拆分出来的文件
+        gamewidget_audio.cpp
+        gamewidget_collisions.cpp
+        gamewidget_events.cpp
+        gamewidget_state.cpp
+        gamewidget_ui.cpp
+        gamewidget_update.cpp
+
         resources.qrc
         pause.h pause.cpp pause.ui
+        settings.h settings.cpp settings.ui
+
     )
 
 else()
