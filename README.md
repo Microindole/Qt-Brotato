@@ -3,10 +3,6 @@
 ![Qt](https://img.shields.io/badge/Qt-6.9-blue.svg)
 ![CMake](https://img.shields.io/badge/CMake-3.16+-green.svg)
 ![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
-![Build](https://img.shields.io/github/workflow/status/username/Qt-Brotato/Build)
-![Stars](https://img.shields.io/github/stars/username/Qt-Brotato)
-![Forks](https://img.shields.io/github/forks/username/Qt-Brotato)
-![Issues](https://img.shields.io/github/issues/username/Qt-Brotato)
 
 
 🌟 一个基于 **Qt6.9** 框架开发的类 **Brotato** 生存游戏，使用 **CMake** 构建系统。玩家控制一个土豆角色在 2D 世界中生存，击败敌人，获得经验升级，并通过升级系统增强自己的能力。
