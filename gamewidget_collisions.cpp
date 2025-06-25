@@ -15,10 +15,7 @@ void GameWidget::checkCollisions()
                 playHitSound();
                 
                 if ((*enemyIt)->isDead()) {
-                    // --- 核心修改：给予经验 ---
                     player->gainExperience((*enemyIt)->getExperienceValue());
-                    // --------------------------
-
                     score += 5;
                     enemiesKilled++;
                     gameScene->removeItem(*enemyIt);
