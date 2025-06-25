@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>700</height>
+    <width>1200</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,89 +16,117 @@
   <property name="styleSheet">
    <string notr="true">
 #Menu {
-    border-image: url(:/images/menu_background.png) 0 0 0 0 stretch stretch;
     background-color: #1c1c1c;
 }
-/* 容器样式 */
-#leftButtonsContainer, #rightButtonsContainer {
-    background-color: transparent;
-}
-/* 按钮通用样式 */
-QPushButton {
-    color: #E0E0E0;
-    background-color: rgba(10, 10, 10, 0.6);
-    border: 1px solid #555;
-    padding: 10px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
+
+/* 按钮样式 - 更暗的颜色，调整尺寸 */
+#leftButtonsContainer QPushButton {
+    color: #D0D0D0;
+    background-color: #2A2A2A;
+    border: 1px solid #1F1F1F;
+    border-radius: 3px;
+    padding: 12px;
+    padding-left: 16px; /* 左侧内边距，让文字靠左 */
+    font-size: 15px;
+    font-family: "Microsoft YaHei", "SimSun", sans-serif;
+    font-weight: normal;
+    text-align: left; /* 文字左对齐 */
     min-width: 160px;
     max-width: 160px;
-    border-radius: 5px;
+    min-height: 45px;
 }
 
-QPushButton:hover {
-    background-color: rgba(200, 200, 200, 0.3);
-    border: 1px solid #FFD700;
+#leftButtonsContainer QPushButton:hover {
+    background-color: #383838;
+    border: 1px solid #555555;
 }
 
-QPushButton:pressed {
-    background-color: rgba(255, 215, 0, 0.4);
+#leftButtonsContainer QPushButton:pressed {
+    background-color: #1F1F1F;
 }
 
-/* 特殊标签样式 */
-#dlcLabel {
-    color: #FFFF00; /* Yellow text */
-    background-color: rgba(10, 10, 10, 0.6);
-    border: 2px solid #FFFF00; /* Yellow border */
-    padding: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    min-width: 160px;
-    max-width: 160px;
-    border-radius: 5px;
-}
-
-/* 版本标签 */
+/* 版本号标签样式 */
 #versionLabel {
-    color: #AAAAAA;
-    font-size: 12px;
+    color: #A0A0A0;
+    font-size: 14px;
     background-color: transparent;
+    border: none;
 }
 
-/* 图片占位符标签 */
+/* Logo 和角色动画控件的容器样式 */
 #titleLogoLabel, #characterImageLabel {
     background-color: transparent;
-}</string>
+    border: none;
+}
+</string>
   </property>
-  <layout class="QGridLayout" name="mainLayout" columnstretch="2,0,0">
+  <layout class="QGridLayout" name="mainLayout" columnstretch="2,3,2">
    <property name="leftMargin">
-    <number>30</number>
+    <number>60</number>
    </property>
    <property name="topMargin">
-    <number>20</number>
+    <number>80</number>
    </property>
    <property name="rightMargin">
-    <number>30</number>
+    <number>60</number>
    </property>
    <property name="bottomMargin">
+    <number>25</number>
+   </property>
+   <property name="horizontalSpacing">
     <number>20</number>
    </property>
+   <item row="0" column="0" colspan="3">
+    <widget class="QLabel" name="titleLogoLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>120</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>180</height>
+      </size>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="resources.qrc">:/images/brotato_logo.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
+     <property name="margin">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0">
     <layout class="QVBoxLayout" name="leftButtonsContainer">
      <property name="spacing">
-      <number>15</number>
+      <number>20</number>
      </property>
      <item>
-      <spacer name="verticalSpacer_3">
+      <spacer name="topSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>120</height>
         </size>
        </property>
       </spacer>
@@ -125,7 +153,7 @@ QPushButton:pressed {
       </widget>
      </item>
      <item>
-      <spacer name="verticalSpacer">
+      <spacer name="bottomSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
        </property>
@@ -139,71 +167,43 @@ QPushButton:pressed {
      </item>
     </layout>
    </item>
-   <item row="1" column="2">
-    <layout class="QVBoxLayout" name="rightButtonsContainer">
-     <property name="spacing">
-      <number>15</number>
-     </property>
+   <item row="1" column="1">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <spacer name="verticalSpacer_2">
+      <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>40</height>
+         <height>60</height>
         </size>
        </property>
       </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="characterImageLabel">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignmentFlag::AlignCenter</set>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
    <item row="2" column="2">
     <widget class="QLabel" name="versionLabel">
      <property name="text">
-      <string>version 1.1.11.0</string>
+      <string>version 1.11.1.0</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="titleLogoLabel">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>150</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap resource="resources.qrc">:/images/brotato_logo.png</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLabel" name="characterImageLabel">
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap resource="resources.qrc">:/images/brotato_char.png</pixmap>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <set>Qt::AlignmentFlag::AlignBottom|Qt::AlignmentFlag::AlignRight</set>
      </property>
     </widget>
    </item>

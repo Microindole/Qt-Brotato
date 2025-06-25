@@ -1,22 +1,26 @@
 #include "dynamicbackground.h"
+#include <QPainter>
+#include <QTimer>
+#include <cmath>
 
 DynamicBackgroundWidget::DynamicBackgroundWidget(QWidget *parent)
     : QWidget(parent), m_animationCounter(0.0)
 {
-    // 1. 定义背景渐变的颜色
-    m_centerColor = QColor(85, 75, 55); // 中心的亮色 (类似土黄色)
-    m_edgeColor = QColor(28, 28, 28);   // 边缘的暗色 (深灰色)
+    // 定义背景的渐变颜色
+    m_centerColor = QColor(85, 75, 55);
+    m_edgeColor = QColor(28, 28, 28);
 
-    // 2. 从资源文件加载图层
-    m_monstersPixmap.load(":/images/bg3.png");
+    // 加载所有图层
+    m_farBackgroundPixmap.load(":/images/bg2.png");
+    m_midGroundPixmap.load(":/images/bg3.png");
     m_foregroundPixmap.load(":/images/bg1.png");
 
-    // 3. 设置动画定时器
+    // 设置动画定时器
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &DynamicBackgroundWidget::updateAnimation);
-    timer->start(33); // 约 30 FPS
+    timer->start(33); // 大约 30 FPS
 
-    // 4. 设置属性，允许绘制透明内容
+    // 确保控件可以绘制半透明内容
     setAttribute(Qt::WA_OpaquePaintEvent, false);
 }
 
@@ -28,40 +32,44 @@ void DynamicBackgroundWidget::paintEvent(QPaintEvent *event)
 
     QRect widgetRect = this->rect();
 
-    // 1. 绘制底层径向渐变背景
-    QRadialGradient gradient(widgetRect.center(), widgetRect.width() / 2.0);
+    // 1. 绘制最底层的径向渐变
+    QRadialGradient gradient(widgetRect.center(), widgetRect.width() / 1.8);
     gradient.setColorAt(0, m_centerColor);
     gradient.setColorAt(1, m_edgeColor);
     painter.fillRect(widgetRect, gradient);
 
-    // 2. 绘制中景怪物层 (bg3.png)
-    if (!m_monstersPixmap.isNull()) {
-        // 使用 sin 函数创建平滑的来回移动效果
-        double monstersOffsetX = 15 * sin(m_animationCounter * 0.5); // 幅度较小，速度较慢
-        QRectF monstersRect = widgetRect.adjusted(monstersOffsetX, 0, monstersOffsetX, 0);
-        painter.drawPixmap(monstersRect, m_monstersPixmap, m_monstersPixmap.rect());
-    }
+    // --- 修复逻辑：使用超扫描（Overscan）技术绘制图层 ---
+    auto drawLayer = [&](const QPixmap &pixmap, double speed, double amplitude, double opacity = 1.0, bool fixedToBottom = false) {
+        if (pixmap.isNull()) return;
 
-    // 3. 绘制前景烟雾层 (bg1.png)
-    if (!m_foregroundPixmap.isNull()) {
-        double foregroundOffsetX = 30 * sin(m_animationCounter); // 幅度较大，速度较快
+        double offsetX = amplitude * sin(m_animationCounter * speed);
+        
+        // 计算一个比控件实际宽度更宽的绘图区域，确保边缘总在屏幕外
+        double overscanWidth = widgetRect.width() + 2 * amplitude;
+        double scaledHeight = overscanWidth * pixmap.height() / pixmap.width();
+        
+        double yPos = fixedToBottom ? (widgetRect.height() - scaledHeight * widgetRect.width() / overscanWidth) : (widgetRect.height() - scaledHeight) / 2.0;
 
-        // 计算前景的位置和尺寸
-        // 我们希望它保持原始高宽比，并固定在底部
-        int newHeight = widgetRect.width() * m_foregroundPixmap.height() / m_foregroundPixmap.width();
-        int newY = widgetRect.height() - newHeight;
+        // 目标矩形比控件宽，并根据偏移量移动
+        QRectF targetRect(offsetX - amplitude, yPos, overscanWidth, scaledHeight);
 
-        QRectF foregroundRect(widgetRect.x() + foregroundOffsetX, newY, widgetRect.width(), newHeight);
-        painter.drawPixmap(foregroundRect, m_foregroundPixmap, m_foregroundPixmap.rect());
-    }
+        painter.setOpacity(opacity);
+        painter.drawPixmap(targetRect, pixmap, pixmap.rect());
+        painter.setOpacity(1.0); // 绘制后重置
+    };
+    // ----------------------------------------------------
+
+    // 2. 按顺序绘制所有图层
+    drawLayer(m_farBackgroundPixmap, 0.25, 10.0, 0.6);  // 远景 (bg2), 移动最慢
+    drawLayer(m_midGroundPixmap, 0.5, 20.0);         // 中景 (bg3)
+    drawLayer(m_foregroundPixmap, 1.0, 40.0, 1.0, true); // 前景 (bg1), 移动最快且贴底
 }
 
 void DynamicBackgroundWidget::updateAnimation()
 {
     m_animationCounter += 0.02;
-    // 周期性重置以防数值溢出
     if (m_animationCounter > 2 * 3.1415926 * 100) {
         m_animationCounter = 0;
     }
-    update(); // 请求重绘
+    update();
 }
