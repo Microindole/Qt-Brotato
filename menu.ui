@@ -15,10 +15,6 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-<!-- #Menu {
-    border-image: url(:/images/menu_background.png) 0 0 0 0 stretch stretch;
-    background-color: #1c1c1c;
-} -->
 #Menu {
     background-color: #1c1c1c; /* 保留一个深色背景以防万一 */
 }
@@ -26,17 +22,17 @@
 #leftButtonsContainer, #rightButtonsContainer {
     background-color: transparent;
 }
-/* 按钮通用样式 */
+/* 按钮通用样式 - 已修改 */
 QPushButton {
     color: #E0E0E0;
     background-color: rgba(10, 10, 10, 0.6);
     border: 1px solid #555;
-    padding: 10px;
-    font-size: 16px;
+    padding: 15px; /* 增加了内边距 */
+    font-size: 20px; /* 增大了字体 */
     font-weight: bold;
     text-align: center;
-    min-width: 160px;
-    max-width: 160px;
+    min-width: 220px; /* 增加了宽度 */
+    max-width: 220px; /* 增加了宽度 */
     border-radius: 5px;
 }
 
@@ -47,20 +43,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
     background-color: rgba(255, 215, 0, 0.4);
-}
-
-/* 特殊标签样式 */
-#dlcLabel {
-    color: #FFFF00; /* Yellow text */
-    background-color: rgba(10, 10, 10, 0.6);
-    border: 2px solid #FFFF00; /* Yellow border */
-    padding: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    min-width: 160px;
-    max-width: 160px;
-    border-radius: 5px;
 }
 
 /* 版本标签 */
@@ -92,6 +74,9 @@ QPushButton:pressed {
     <layout class="QVBoxLayout" name="leftButtonsContainer">
      <property name="spacing">
       <number>15</number>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignHCenter</set>
      </property>
      <item>
       <spacer name="verticalSpacer_3">
@@ -147,19 +132,6 @@ QPushButton:pressed {
      <property name="spacing">
       <number>15</number>
      </property>
-     <item>
-      <spacer name="verticalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Orientation::Vertical</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
     </layout>
    </item>
    <item row="2" column="2">
