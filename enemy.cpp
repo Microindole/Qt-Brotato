@@ -18,12 +18,14 @@ Enemy::Enemy(int waveNumber)
         speed = 0.7f + (waveNumber - 1) * 0.05f;
         damage = 10 + (waveNumber - 1) * 2;
         maxHealth = 60 + (waveNumber - 1) * 10;
+        experienceValue = 5;
     } else { // Type2
         pixmap.load(":/images/common2.png");
         // 类型2: 速度更快，但更脆弱
         speed = 1.0f + (waveNumber - 1) * 0.07f;
         damage = 8 + (waveNumber - 1) * 2;
         maxHealth = 45 + (waveNumber - 1) * 8;
+        experienceValue = 3;
     }
     health = maxHealth;
     
@@ -81,8 +83,8 @@ void Enemy::advance(int phase)
     if (phase == 0) return;
 
     // 更新动画计数器以产生平滑的“呼吸”效果
-    animationCounter += 0.08; // 这个值可以调整动画速度
-    // update() 会被 GameWidget 中的 gameScene->advance() 自动调用，这里无需手动调用
+    animationCounter += 0.08; 
+    update();
 }
 
 void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

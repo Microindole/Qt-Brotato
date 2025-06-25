@@ -6,19 +6,24 @@ void GameWidget::checkCollisions()
 {
     if (!player) return;
 
+    // 子弹与敌人碰撞
     for (auto bulletIt = bullets.begin(); bulletIt != bullets.end();) {
         bool bulletHit = false;
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
             if ((*bulletIt)->collidesWithItem(*enemyIt)) {
-                (*enemyIt)->takeDamage(10);
+                (*enemyIt)->takeDamage(player->getAttackPower()); // <-- 使用玩家攻击力
                 playHitSound();
                 
                 if ((*enemyIt)->isDead()) {
+                    // --- 核心修改：给予经验 ---
+                    player->gainExperience((*enemyIt)->getExperienceValue());
+                    // --------------------------
+
+                    score += 5;
+                    enemiesKilled++;
                     gameScene->removeItem(*enemyIt);
                     delete *enemyIt;
                     enemyIt = enemies.erase(enemyIt);
-                    score += 5;
-                    enemiesKilled++;
                 } else {
                     ++enemyIt;
                 }
@@ -38,6 +43,7 @@ void GameWidget::checkCollisions()
         }
     }
 
+    // 敌人与玩家碰撞
     for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
         if ((*enemyIt)->collidesWithItem(player)) {
             player->takeDamage((*enemyIt)->getDamage());

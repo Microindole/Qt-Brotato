@@ -43,6 +43,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resources.qrc
         pause.h pause.cpp pause.ui
         settings.h settings.cpp settings.ui
+        upgradewidget.h upgradewidget.cpp
 
     )
 

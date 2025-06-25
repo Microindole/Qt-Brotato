@@ -6,7 +6,8 @@
 #include <cmath>
 
 Player::Player()
-    : QGraphicsEllipseItem()
+    : QObject()
+    , QGraphicsEllipseItem()
     , maxHealth(60)
     , health(60)
     , speed(2.8f)
@@ -124,6 +125,7 @@ void Player::levelUp()
 
     // 计算下一级所需经验
     expToNextLevel = calculateExpForLevel(level + 1);
+    emit levelUpOccurred();
 }
 
 void Player::regenerateHealth()
@@ -244,3 +246,25 @@ void Player::increaseAttackRange(float multiplier)
         attackRange = 0; // 确保攻击距离不会变成负值
     }
 }
+
+void Player::increaseMaxHealth(int amount)
+{
+    maxHealth += amount;
+    heal(amount); // 增加最大生命值时，也恢复等量的当前生命值
+}
+
+void Player::increaseAttackPower(int amount)
+{
+    attackPower += amount;
+}
+
+void Player::increaseSpeed(float amount)
+{
+    speed += amount;
+}
+
+void Player::increaseHealthRegen(float amount)
+{
+    healthRegen += amount;
+}
+

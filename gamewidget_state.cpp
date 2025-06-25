@@ -1,6 +1,7 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 #include <QMessageBox>
+#include <QRandomGenerator>
 
 void GameWidget::pauseGame()
 {
@@ -98,4 +99,48 @@ void GameWidget::gameOver()
         QString("土豆兄弟倒下了！\n\n你的分数: %1\n到达波次: %2").arg(score).arg(wave));
 
     emit backToMenuRequested();
+}
+
+void GameWidget::onPlayerLevelUp()
+{
+    if (gamePaused) return; // 如果游戏已经暂停（比如在暂停菜单），则不处理升级
+
+    gamePaused = true;
+    gameTimer->stop();
+    enemySpawnTimer->stop();
+    shootTimer->stop();
+    stopBackgroundMusic(); // 升级时暂停背景音乐
+
+    showUpgradeMenu();
+}
+
+void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
+{
+    if (player) {
+        switch (type) {
+            case UpgradeWidget::MaxHealth:
+                player->increaseMaxHealth(20);
+                break;
+            case UpgradeWidget::AttackPower:
+                player->increaseAttackPower(5);
+                break;
+            case UpgradeWidget::Speed:
+                player->increaseSpeed(0.3f);
+                break;
+            case UpgradeWidget::HealthRegen:
+                player->increaseHealthRegen(1.0f);
+                break;
+        }
+    }
+
+    upgradeWidget->hide();
+
+    // 恢复游戏
+    gamePaused = false;
+    gameTimer->start(16);
+    enemySpawnTimer->start(); // 使用它之前的间隔
+    shootTimer->start();      // 使用它之前的间隔
+    startBackgroundMusic();
+    fpsTimer.start();
+    setFocus();
 }

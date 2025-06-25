@@ -14,7 +14,8 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "pause.h"
-#include "settings.h" // 添加
+#include "settings.h"
+#include "upgradewidget.h" // 包含升级窗口头文件
 
 namespace Ui {
 class GameWidget;
@@ -28,10 +29,10 @@ public:
     explicit GameWidget(QWidget *parent = nullptr);
     ~GameWidget();
     
-    void startGame(); // 开始游戏的公共接口
+    void startGame();
 
 signals:
-    void backToMenuRequested(); // 返回菜单信号
+    void backToMenuRequested();
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;
@@ -47,17 +48,21 @@ private slots:
     void showControls();
     void showAbout();
     
-    // 暂停界面相关槽函数
+    // 暂停界面槽函数
     void onContinueGame();
     void onRestartFromPause();
     void onEndRun();
     void onOpenSettings();
     void onBackToMenu();
 
-    // 新增设置相关的槽函数
+    // 设置界面槽函数
     void onMusicVolumeChanged(float volume);
     void onSfxVolumeChanged(float volume);
     void onSettingsClosed();
+
+    // --- 新增：升级流程的槽函数声明 ---
+    void onPlayerLevelUp();
+    void onUpgradeSelected(UpgradeWidget::UpgradeType type);
 
 private:
     void setupGame();
@@ -69,8 +74,9 @@ private:
     void updateWave();
     void updateUI();
     void gameOver();
-    void showPauseMenu();    // 显示暂停菜单
-    void hidePauseMenu();    // 隐藏暂停菜单
+    void showPauseMenu();
+    void hidePauseMenu();
+    void showUpgradeMenu(); // 显示升级菜单
     
     // 音频函数
     void playShootSound();
@@ -79,7 +85,7 @@ private:
     void startBackgroundMusic();
     void stopBackgroundMusic();
 
-    // 新增音量控制方法
+    // 音量控制
     void setMusicVolume(float volume);
     void setSfxVolume(float volume);
 
@@ -91,7 +97,8 @@ private:
     QList<Enemy*> enemies;
     QList<Bullet*> bullets;
     Pause *pauseWidget;
-    Settings *settingsWidget; // 添加
+    Settings *settingsWidget;
+    UpgradeWidget *upgradeWidget; // 升级窗口实例
 
     // 定时器
     QTimer *gameTimer;
@@ -114,10 +121,10 @@ private:
     int score;
     int wave;
     int enemiesKilled;
-    float currentMusicVolume; // 添加
-    float currentSfxVolume;   // 添加
+    float currentMusicVolume;
+    float currentSfxVolume;
     bool gameRunning;
-    bool gamePaused;
+    bool gamePaused; // 这个状态现在也用于升级时的暂停
     int frameCount;
     bool gameInitialized;
 };

@@ -21,6 +21,7 @@ public:
     void moveTowards(const QPointF &target);
     int getDamage() const { return damage; }
     float getSpeed() const { return speed; }
+    int getExperienceValue() const { return experienceValue; }
     
     void takeDamage(int dmg);
     int getHealth() const { return health; }
@@ -38,6 +39,7 @@ private:
     int health;
     int maxHealth;
     int waveLevel;
+    int experienceValue; // 击败敌人后玩家获得的经验值
 
     EnemyType type;
     QPixmap pixmap; // 使用单个 pixmap

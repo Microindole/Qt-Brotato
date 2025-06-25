@@ -4,70 +4,75 @@
 #include <QGraphicsEllipseItem>
 #include <QPainter>
 #include <QPixmap>
+#include <QObject>
 
-class Player : public QGraphicsEllipseItem
+class Player : public QObject, public QGraphicsEllipseItem
 {
+    Q_OBJECT
+
 public:
     Player();
     
-    // 基础属性获取器
+    // 属性获取器
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     float getSpeed() const { return speed; }
-    
-    // 新增属性获取器
     int getLevel() const { return level; }
     int getExperience() const { return experience; }
     int getExpToNextLevel() const { return expToNextLevel; }
     float getHealthRegen() const { return healthRegen; }
     int getAttackPower() const { return attackPower; }
     int getArmor() const { return armor; }
-    int getAttackRange() const { return attackRange; } // <-- 新增：获取攻击距离
+    int getAttackRange() const { return attackRange; }
 
-    // 基础功能
+    // 功能
     void takeDamage(int damage);
     void heal(int amount);
-    
-    // 新增功能
     void gainExperience(int exp);
-    void levelUp();
-    void regenerateHealth(); // 生命再生逻辑
-    void setFacingDirection(bool right); // <-- 新增：设置朝向的方法
+    void regenerateHealth(); 
+    void setFacingDirection(bool right); 
     void setMoving(bool moving);
     bool isMoving() const { return moving; }
-    void increaseAttackRange(float multiplier); // 提升攻击距离的方法
+    
+    // --- 新增：属性提升方法 ---
+    void increaseMaxHealth(int amount);
+    void increaseAttackPower(int amount);
+    void increaseSpeed(float amount);
+    void increaseHealthRegen(float amount);
+    void increaseAttackRange(float multiplier);
 
     // 动画相关
     void advance(int phase) override;
     QRectF boundingRect() const override;
-    
+
+signals:
+    void levelUpOccurred();
+
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    // 基础属性
+    void levelUp();
+    int calculateExpForLevel(int level);
+
+    // 属性
     int health;
     int maxHealth;
     float speed;
+    int level;
+    int experience;
+    int expToNextLevel;
+    float healthRegen;
+    int attackPower;
+    int armor;
+    int attackRange = 3000;
     
-    // 新增属性
-    int level;              // 等级
-    int experience;         // 当前经验
-    int expToNextLevel;     // 升级所需经验
-    float healthRegen;      // 生命再生（每秒回复量）
-    int attackPower;        // 攻击力
-    int armor;              // 护甲（减伤百分比）
-    int attackRange = 3000;  // 默认攻击距离为 100 像素
-    
-    // 动画相关
-    QPixmap bodyPixmap;     // 身体图片
-    QPixmap footPixmap;     // 脚部图片
-    qreal animationCounter; // 动画计数器
-    bool facingRight; // <-- 新增：记录当前朝向 (true=右, false=左)
+    // 动画
+    QPixmap bodyPixmap;
+    QPixmap footPixmap;
+    qreal animationCounter;
+    bool facingRight;
     bool moving = false;
-
-    // 辅助函数
-    int calculateExpForLevel(int level); // 计算升级所需经验
 };
 
 #endif // PLAYER_H
