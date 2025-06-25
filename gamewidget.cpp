@@ -38,8 +38,8 @@ GameWidget::GameWidget(QWidget *parent)
     , score(0)
     , wave(1)
     , enemiesKilled(0)
-    , currentMusicVolume(0.5f)
-    , currentSfxVolume(0.5f)
+    , currentMusicVolume(0.7f)
+    , currentSfxVolume(0.2f)
     , gameRunning(false)
     , gamePaused(false)
     , frameCount(0)
@@ -111,7 +111,7 @@ void GameWidget::setupGame()
 
         // 调整角色大小 (关键修复)
         //  定义一个更大的目标尺寸，这会让角色看起来小一些。
-        QSize targetSize(1600, 900); 
+        QSize targetSize(1920, 1080); 
 
         //  将原始图片缩放到目标尺寸，保持宽高比，使用平滑变换以保证图片质量
         QPixmap scaledBgPixmap = originalBgPixmap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);

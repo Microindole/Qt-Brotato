@@ -21,10 +21,11 @@ void Settings::setInitialVolumes(float musicVolume, float sfxVolume)
     ui->musicSlider->blockSignals(true);
     ui->sfxSlider->blockSignals(true);
 
-    // 音乐音量: 0.0 to 1.0 -> 0 to 100
+    // 将 0.0-1.0 的音量值转换为 0-100 的滑块值
     ui->musicSlider->setValue(static_cast<int>(musicVolume * 100));
-    // 音效音量: 0.0 to 0.02 -> 0 to 100
-    ui->sfxSlider->setValue(static_cast<int>((sfxVolume / 0.02f) * 100.0f));
+    ui->sfxSlider->setValue(static_cast<int>(sfxVolume * 100)); // <-- 修正了音效音量的计算
+
+    // 更新对应的文本标签
     ui->musicValueLabel->setText(QString("%1%").arg(ui->musicSlider->value()));
     ui->sfxValueLabel->setText(QString("%1%").arg(ui->sfxSlider->value()));
 
@@ -35,15 +36,17 @@ void Settings::setInitialVolumes(float musicVolume, float sfxVolume)
 void Settings::on_musicSlider_valueChanged(int value)
 {
     ui->musicValueLabel->setText(QString("%1%").arg(value));
-    // 音乐音量: 0 to 100 -> 0.0 to 1.0
+    // 将 0-100 的滑块值转换为 0.0-1.0 的实际音量值
     emit backgroundMusicVolumeChanged(static_cast<float>(value) / 100.0f);
 }
 
 void Settings::on_sfxSlider_valueChanged(int value)
 {
-    ui->musicValueLabel->setText(QString("%1%").arg(value));
-    // 音效音量: 0 to 100 -> 0.0 to 0.02
-    emit soundEffectsVolumeChanged((static_cast<float>(value) / 100.0f) * 0.02f);
+    // 更新音效音量标签
+    ui->sfxValueLabel->setText(QString("%1%").arg(value));
+    
+    // 修正了音效音量的计算，使其与音乐音量逻辑一致
+    emit soundEffectsVolumeChanged(static_cast<float>(value) / 100.0f);
 }
 
 void Settings::on_backButton_clicked()
