@@ -42,6 +42,10 @@ private:
     EnemyType type;
     QPixmap pixmap; // 使用单个 pixmap
     double animationCounter; // 用于动画
+    bool facingRight = true; // 新增：记录当前朝向 (true=右, false=左)
+
+public:
+    void setFacingDirection(bool right); // 新增：设置朝向的方法
 };
 
 #endif // ENEMY_H
