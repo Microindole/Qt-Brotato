@@ -207,11 +207,4 @@ Qt-Brotato/
 
 ---
 
-## 🎥 游戏演示
-![游戏截图](images/screenshot.png)
-
-[点击查看演示视频](https://www.youtube.com/watch?v=example)
-
----
-
 🎮 **享受游戏乐趣! 在土豆兄弟的世界中生存下去!**
