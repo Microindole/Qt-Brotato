@@ -31,5 +31,11 @@
     <!-- 地图 -->
     <file>images/map.png</file> <!-- 地图 -->
 
+    <!-- 主菜单背景图片 -->
+    <file>images/bg1.png</file>
+    <file>images/bg2.png</file>
+    <file>images/bg3.png</file>
+
+
 </qresource>
 </RCC>

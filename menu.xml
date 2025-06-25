@@ -15,12 +15,9 @@
   </property>
   <property name="styleSheet">
    <string notr="true">
-<!-- #Menu {
+#Menu {
     border-image: url(:/images/menu_background.png) 0 0 0 0 stretch stretch;
     background-color: #1c1c1c;
-} -->
-#Menu {
-    background-color: #1c1c1c; /* 保留一个深色背景以防万一 */
 }
 /* 容器样式 */
 #leftButtonsContainer, #rightButtonsContainer {

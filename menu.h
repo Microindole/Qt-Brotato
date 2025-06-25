@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <cmath>
 
+#include "dynamicbackground.h"
+
 
 namespace Ui {
 class Menu;
@@ -85,6 +87,7 @@ signals:
 
 private:
     Ui::Menu *ui;
+    DynamicBackgroundWidget *m_backgroundWidget;
 };
 
 #endif // MENU_H
