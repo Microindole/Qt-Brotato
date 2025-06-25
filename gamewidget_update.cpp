@@ -44,11 +44,11 @@ void GameWidget::movePlayer()
     if (pressedKeys.contains(Qt::Key_S)) moveDirection.ry() += 1;
     if (pressedKeys.contains(Qt::Key_A)) {
         moveDirection.rx() -= 1;
-        player->setFacingDirection(false); // ←朝左
+        player->setFacingDirection(false);
     }
     if (pressedKeys.contains(Qt::Key_D)) {
         moveDirection.rx() += 1;
-        player->setFacingDirection(true); // →朝右
+        player->setFacingDirection(true);
     }
 
     if (!moveDirection.isNull()) {
@@ -106,7 +106,6 @@ void GameWidget::shootBullets()
         }
     }
 
-    // 如果找到了目标敌人（即 nearestEnemy 不是 nullptr），就发射子弹
     if (nearestEnemy) {
         Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
         gameScene->addItem(bullet);

@@ -1,7 +1,7 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
-#include <QRandomGenerator> // <-- 新增：修复 'QRandomGenerator' has not been declared
-#include <algorithm>        // <-- 新增：为 std::shuffle 提供支持
+#include <QRandomGenerator>
+#include <algorithm>
 
 void GameWidget::updateUI()
 {
@@ -10,11 +10,11 @@ void GameWidget::updateUI()
         ui->healthBar->setValue(player->getHealth());
         ui->healthBar->setFormat(QString("%1 / %2").arg(player->getHealth()).arg(player->getMaxHealth()));
     
-        // --- 新增：更新经验条 ---
+        // 更新经验条
         ui->expBar->setMaximum(player->getExpToNextLevel());
         ui->expBar->setValue(player->getExperience());
         ui->expBar->setFormat(QString("LV.%1").arg(player->getLevel()));
-        // -----------------------
+        
     }
     ui->scoreLabel->setText(QString("🏆 分数: %1").arg(score));
     ui->waveLabel->setText(QString("🌊 波次: %1").arg(wave));

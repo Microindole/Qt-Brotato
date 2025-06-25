@@ -8,10 +8,10 @@ Enemy::Enemy(int waveNumber)
     : QGraphicsEllipseItem()
     , waveLevel(waveNumber)
 {
-    // 1. 随机选择一个敌人类型
+    // 随机选择一个敌人类型
     type = (QRandomGenerator::global()->bounded(2) == 0) ? Type1 : Type2;
 
-    // 2. 根据类型加载不同的图片和设置不同的属性
+    // 根据类型加载不同的图片和设置不同的属性
     if (type == Type1) {
         pixmap.load(":/images/common1.png");
         // 类型1: 基础型，血厚攻高
@@ -35,7 +35,6 @@ Enemy::Enemy(int waveNumber)
     maxHealth = qMin(maxHealth, 200);
     health = maxHealth;
 
-    // 3. **关键修复**: 设置item的矩形区域用于碰撞检测
     // 使用图片尺寸来定义碰撞区域，并将原点设置在中心
     if (!pixmap.isNull()) {
         setRect(-pixmap.width() / 2.0, -pixmap.height() / 2.0, pixmap.width(), pixmap.height());
@@ -101,7 +100,7 @@ void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
         painter->scale(-1, 1);
     }
 
-    // --- 计算动画缩放 ---
+    // 动画缩放 
     qreal scaleX = 1.0 + 0.05 * sin(animationCounter);
     qreal scaleY = 1.0 - 0.05 * sin(animationCounter);
 
@@ -115,7 +114,7 @@ void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
     painter->restore();
 
-    // --- 绘制血条 ---
+    // 血条
     qreal healthBarY = scaledRect.top() - 8;
     qreal healthBarWidth = originalRect.width() * 0.9;
     qreal healthBarX = -healthBarWidth / 2.0;

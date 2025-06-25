@@ -14,7 +14,6 @@
 #include <QUrl>
 #include <QDebug>
 
-// --- 构造函数与析构函数 ---
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
@@ -109,7 +108,6 @@ void GameWidget::setupGame()
         gameScene->setSceneRect(0, 0, 1280, 720);
     } else {
 
-        // 调整角色大小 (关键修复)
         //  定义一个更大的目标尺寸，这会让角色看起来小一些。
         QSize targetSize(1920, 1080); 
 

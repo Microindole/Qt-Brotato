@@ -1,6 +1,6 @@
 #include "pause.h"
 #include "ui_pause.h"
-#include "player.h" // 包含Player头文件以获取其定义
+#include "player.h"
 
 Pause::Pause(QWidget *parent)
     : QWidget(parent)
@@ -37,7 +37,7 @@ void Pause::updateStats(const Player *player)
     ui->attackPowerValueLabel->setText(QString::number(player->getAttackPower()));
     ui->armorValueLabel->setText(QString::number(player->getArmor()));
     ui->speedValueLabel->setText(QString::number(player->getSpeed(), 'f', 1));
-    ui->attackRangeValueLabel->setText(QString::number(player->getAttackRange(), 'f', 1)); // 更新攻击距离
+    ui->attackRangeValueLabel->setText(QString::number(player->getAttackRange(), 'f', 1));
 }
 
 void Pause::onContinueClicked()

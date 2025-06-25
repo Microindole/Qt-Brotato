@@ -15,7 +15,7 @@
 #include "bullet.h"
 #include "pause.h"
 #include "settings.h"
-#include "upgradewidget.h" // 包含升级窗口头文件
+#include "upgradewidget.h"
 
 namespace Ui {
 class GameWidget;
@@ -60,7 +60,7 @@ private slots:
     void onSfxVolumeChanged(float volume);
     void onSettingsClosed();
 
-    // --- 新增：升级流程的槽函数声明 ---
+    // 升级流程的槽函数声明
     void onPlayerLevelUp();
     void onUpgradeSelected(UpgradeWidget::UpgradeType type);
 
@@ -76,7 +76,7 @@ private:
     void gameOver();
     void showPauseMenu();
     void hidePauseMenu();
-    void showUpgradeMenu(); // 显示升级菜单
+    void showUpgradeMenu();
     
     // 音频函数
     void playShootSound();
@@ -98,7 +98,7 @@ private:
     QList<Bullet*> bullets;
     Pause *pauseWidget;
     Settings *settingsWidget;
-    UpgradeWidget *upgradeWidget; // 升级窗口实例
+    UpgradeWidget *upgradeWidget;
 
     // 定时器
     QTimer *gameTimer;
@@ -124,7 +124,7 @@ private:
     float currentMusicVolume;
     float currentSfxVolume;
     bool gameRunning;
-    bool gamePaused; // 这个状态现在也用于升级时的暂停
+    bool gamePaused;
     int frameCount;
     bool gameInitialized;
 };

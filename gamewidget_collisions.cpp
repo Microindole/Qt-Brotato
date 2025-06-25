@@ -11,7 +11,7 @@ void GameWidget::checkCollisions()
         bool bulletHit = false;
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
             if ((*bulletIt)->collidesWithItem(*enemyIt)) {
-                (*enemyIt)->takeDamage(player->getAttackPower()); // <-- 使用玩家攻击力
+                (*enemyIt)->takeDamage(player->getAttackPower());
                 playHitSound();
                 
                 if ((*enemyIt)->isDead()) {

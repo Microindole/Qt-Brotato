@@ -34,7 +34,7 @@ public:
     void setMoving(bool moving);
     bool isMoving() const { return moving; }
     
-    // --- 新增：属性提升方法 ---
+    // 属性提升方法
     void increaseMaxHealth(int amount);
     void increaseAttackPower(int amount);
     void increaseSpeed(float amount);

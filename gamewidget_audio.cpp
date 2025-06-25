@@ -6,25 +6,25 @@ void GameWidget::setupAudio()
     backgroundAudioOutput = new QAudioOutput(this);
     backgroundMusic->setAudioOutput(backgroundAudioOutput);
     backgroundMusic->setSource(QUrl("qrc:/sounds/background.wav"));
-    backgroundAudioOutput->setVolume(currentMusicVolume); // 使用变量
+    backgroundAudioOutput->setVolume(currentMusicVolume);
 
     shootSound = new QMediaPlayer(this);
     shootAudioOutput = new QAudioOutput(this);
     shootSound->setAudioOutput(shootAudioOutput);
     shootSound->setSource(QUrl("qrc:/sounds/shoot.wav"));
-    shootAudioOutput->setVolume(currentSfxVolume); // 使用变量
+    shootAudioOutput->setVolume(currentSfxVolume);
 
     hitSound = new QMediaPlayer(this);
     hitAudioOutput = new QAudioOutput(this);
     hitSound->setAudioOutput(hitAudioOutput);
     hitSound->setSource(QUrl("qrc:/sounds/hit.wav"));
-    hitAudioOutput->setVolume(currentSfxVolume); // 使用变量
+    hitAudioOutput->setVolume(currentSfxVolume);
     
     gameOverSound = new QMediaPlayer(this);
     gameOverAudioOutput = new QAudioOutput(this);
     gameOverSound->setAudioOutput(gameOverAudioOutput);
     gameOverSound->setSource(QUrl("qrc:/sounds/push.wav"));
-    gameOverAudioOutput->setVolume(currentSfxVolume); // 使用变量
+    gameOverAudioOutput->setVolume(currentSfxVolume);
 }
 
 void GameWidget::setMusicVolume(float volume)

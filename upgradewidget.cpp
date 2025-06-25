@@ -1,5 +1,4 @@
 #include "upgradewidget.h"
-// 由于我们没有UI文件，所以手动包含布局和按钮的头文件
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>

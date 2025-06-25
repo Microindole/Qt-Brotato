@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-// 前向声明
+
 class Menu;
 class GameWidget;
 

@@ -76,7 +76,6 @@ void Player::advance(int phase)
     // 无论是否移动，都让动画计数器自增，实现持续呼吸
     animationCounter += 0.12;
 
-    // --- 核心修复 ---
     // 调用 update() 来请求重绘，从而绘制新的动画帧。
     // 这是必需的，因为当玩家静止时，setPos() 不会被调用，
     // 因此不会自动触发重绘。
@@ -117,11 +116,11 @@ void Player::levelUp()
     level++;
     
     // 升级时提升属性
-    maxHealth += 10;        // 每级增加10点最大生命值
-    health = maxHealth;     // 升级时回满血
-    attackPower += 2;       // 每级增加2点攻击力
-    speed += 0.1f;          // 每级增加0.1移动速度
-    increaseAttackRange(1.1f); // 每级攻击距离增加10%
+    maxHealth += 10;        
+    health = maxHealth;     
+    attackPower += 2;       
+    speed += 0.1f;          
+    increaseAttackRange(1.1f); 
 
     // 计算下一级所需经验
     expToNextLevel = calculateExpForLevel(level + 1);
@@ -148,20 +147,19 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     
     painter->save();
 
-    // 1. 根据朝向翻转画布
+    // 根据朝向翻转画布
     if (!facingRight) {
         painter->scale(-1, 1);
     }
 
-    // --- 动画协调性修复 ---
-    // 2. 根据移动状态计算不同的动画参数
+    // 根据移动状态计算不同的动画参数
     qreal bodyBounce, scaleX, scaleY;
 
     if (moving) {
         // 移动时：身体的起伏和缩放与脚部摆动频率（更快）同步
         qreal moveAnimationTime = animationCounter * 2.5;
-        bodyBounce = 3.0 * sin(moveAnimationTime);     // 移动时身体起伏更明显
-        scaleX = 1.0 + 0.04 * sin(moveAnimationTime);  // 缩放幅度微调
+        bodyBounce = 3.0 * sin(moveAnimationTime);
+        scaleX = 1.0 + 0.04 * sin(moveAnimationTime);
         scaleY = 1.0 - 0.04 * sin(moveAnimationTime);
     } else {
         // 静止时：使用原有的较慢的“呼吸”效果
@@ -174,7 +172,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     qreal bodyW = bodyPixmap.width();
     qreal bodyH = bodyPixmap.height();
 
-    // 3. 先绘制脚部，并应用浮动效果
+    // 先绘制脚部，并应用浮动效果
     if (!footPixmap.isNull()) {
         qreal footScale = 2;
         qreal footW = footPixmap.width() * footScale;
@@ -205,7 +203,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->restore();
     }
 
-    // 4. 后绘制身体，计算一个缩放后的矩形来绘制
+    // 后绘制身体，计算一个缩放后的矩形来绘制
     qreal newWidth = bodyW * scaleX;
     qreal newHeight = bodyH * scaleY;
     // 身体的位置也应用 bodyBounce
@@ -214,7 +212,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
     painter->restore();
 
-    // 5. 最后绘制生命条（在所有变换之外）
+    // 最后绘制生命条（在所有变换之外）
     if (health < maxHealth) {
         qreal healthBarY = -bodyH / 2.0 - 12;
         qreal healthBarWidth = bodyW * 0.9;
