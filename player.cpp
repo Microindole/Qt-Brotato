@@ -18,6 +18,7 @@ Player::Player()
     , armor(0)
     , animationCounter(0.0)
     , facingRight(true) // <-- 初始化朝向为右
+    , moving(false)
 {
     // 加载图片资源
     bodyPixmap.load(":/images/quanneng.png");
@@ -73,6 +74,12 @@ void Player::advance(int phase)
 
     // 无论是否移动，都让动画计数器自增，实现持续呼吸
     animationCounter += 0.12;
+
+    // --- 核心修复 ---
+    // 调用 update() 来请求重绘，从而绘制新的动画帧。
+    // 这是必需的，因为当玩家静止时，setPos() 不会被调用，
+    // 因此不会自动触发重绘。
+    update();
 }
 
 void Player::takeDamage(int damage)
@@ -144,12 +151,23 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
         painter->scale(-1, 1);
     }
 
-    // --- 核心修正：采用和 Enemy 一样的动画逻辑 ---
+    // --- 动画协调性修复 ---
+    // 2. 根据移动状态计算不同的动画参数
+    qreal bodyBounce, scaleX, scaleY;
 
-    // 2. 计算动画参数，但不直接应用到 painter
-    qreal bodyBounce = 2.0 * sin(animationCounter);
-    qreal scaleX = 1.0 + 0.05 * sin(animationCounter);
-    qreal scaleY = 1.0 - 0.05 * sin(animationCounter);
+    if (moving) {
+        // 移动时：身体的起伏和缩放与脚部摆动频率（更快）同步
+        qreal moveAnimationTime = animationCounter * 2.5;
+        bodyBounce = 3.0 * sin(moveAnimationTime);     // 移动时身体起伏更明显
+        scaleX = 1.0 + 0.04 * sin(moveAnimationTime);  // 缩放幅度微调
+        scaleY = 1.0 - 0.04 * sin(moveAnimationTime);
+    } else {
+        // 静止时：使用原有的较慢的“呼吸”效果
+        bodyBounce = 2.0 * sin(animationCounter);
+        scaleX = 1.0 + 0.05 * sin(animationCounter);
+        scaleY = 1.0 - 0.05 * sin(animationCounter);
+    }
+
 
     qreal bodyW = bodyPixmap.width();
     qreal bodyH = bodyPixmap.height();
@@ -166,6 +184,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 
         qreal swing = 0;
         if (moving) {
+            // 脚的摆动频率使用更快的动画时间
             swing = 20 * std::sin(animationCounter * 2.5);
         }
 
