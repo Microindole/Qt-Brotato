@@ -4,15 +4,15 @@
 #include <cmath>
 
 Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos)
-    : QGraphicsEllipseItem(-3, -3, 6, 6)
-    , speed(10.0f)  // 子弹速度稍微降低
-    , damage(12)    // 子弹伤害降低
+    : QGraphicsEllipseItem(-8, -8, 16, 16) // 变大
+    , speed(10.0f)
+    , damage(12)
 {
     setPos(startPos);
-    
+
     QPointF direction = targetPos - startPos;
     float distance = std::sqrt(direction.x() * direction.x() + direction.y() * direction.y());
-    
+
     if (distance > 0) {
         velocity = (direction / distance) * speed;
     }
@@ -20,9 +20,8 @@ Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos)
 
 QRectF Bullet::boundingRect() const
 {
-    // 返回一个能完全包裹住子弹核心和发光效果的矩形
-    // 发光效果半径为5，我们取6作为安全半径
-    return QRectF(-6, -6, 12, 12);
+    // 变大，发光圈半径12
+    return QRectF(-12, -12, 24, 24);
 }
 
 void Bullet::move()
@@ -43,19 +42,19 @@ void Bullet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
-    
-    // 绘制子弹外层发光
+
+    // 发光圈变大
     painter->setBrush(QBrush(QColor(255, 255, 0, 100)));
     painter->setPen(Qt::NoPen);
-    painter->drawEllipse(-5, -5, 10, 10);
-    
-    // 绘制子弹核心
+    painter->drawEllipse(-12, -12, 24, 24);
+
+    // 子弹核心变大
     painter->setBrush(QBrush(Qt::yellow));
-    painter->setPen(QPen(Qt::darkYellow, 1));
-    painter->drawEllipse(rect());
-    
-    // 绘制中心亮点
+    painter->setPen(QPen(Qt::darkYellow, 2));
+    painter->drawEllipse(-8, -8, 16, 16);
+
+    // 中心亮点也适当变大
     painter->setBrush(QBrush(Qt::white));
     painter->setPen(Qt::NoPen);
-    painter->drawEllipse(-1, -1, 2, 2);
+    painter->drawEllipse(-2, -2, 4, 4);
 }

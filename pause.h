@@ -17,7 +17,7 @@ public:
     explicit Pause(QWidget *parent = nullptr);
     ~Pause();
 
-    void updateStats(const Player* player); // 新增：更新属性显示
+    void updateStats(const Player* player); // 更新属性显示，包括攻击距离
 
 private slots:
     void onContinueClicked();

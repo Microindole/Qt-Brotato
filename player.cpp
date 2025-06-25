@@ -71,8 +71,8 @@ void Player::advance(int phase)
 {
     if (phase == 0) return;
 
-    // 更新动画计数器，产生平滑的动画效果
-    animationCounter += 0.12; // 比敌人稍快的动画速度，让玩家角色更有活力
+    // 无论是否移动，都让动画计数器自增，实现持续呼吸
+    animationCounter += 0.12;
 }
 
 void Player::takeDamage(int damage)
@@ -113,7 +113,8 @@ void Player::levelUp()
     health = maxHealth;     // 升级时回满血
     attackPower += 2;       // 每级增加2点攻击力
     speed += 0.1f;          // 每级增加0.1移动速度
-    
+    increaseAttackRange(1.1f); // 每级攻击距离增加10%
+
     // 计算下一级所需经验
     expToNextLevel = calculateExpForLevel(level + 1);
 }
@@ -136,73 +137,72 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     Q_UNUSED(option)
     Q_UNUSED(widget)
     
-    painter->save(); // 保存状态，以便后续恢复
+    painter->save();
 
-    // 核心改动：根据朝向翻转整个画布
+    // 1. 根据朝向翻转画布
     if (!facingRight) {
         painter->scale(-1, 1);
     }
 
-    // --- 接下来的所有绘制都会在可能被翻转的坐标系中进行 ---
+    // --- 核心修正：采用和 Enemy 一样的动画逻辑 ---
 
-    if (bodyPixmap.isNull()) {
-        painter->setBrush(QBrush(QColor(139, 69, 19)));
-        painter->setPen(QPen(Qt::black, 2));
-        painter->drawEllipse(-15, -15, 30, 30);
-        painter->restore(); // 别忘了在返回前恢复状态
-        return;
-    }
-    
-    // --- 动画计算 ---
+    // 2. 计算动画参数，但不直接应用到 painter
     qreal bodyBounce = 2.0 * sin(animationCounter);
-    qreal bodyScaleX = 1.0 + 0.02 * sin(animationCounter * 0.8);
-    qreal bodyScaleY = 1.0 + 0.015 * cos(animationCounter * 0.8);
-    qreal footSwing = 3.0 * sin(animationCounter * 1.5);
-    qreal footBounce = 1.5 * cos(animationCounter * 3.0);
-    
-    // --- 定位与绘制 ---
-    qreal bodyW = bodyPixmap.width() * bodyScaleX;
-    qreal bodyH = bodyPixmap.height() * bodyScaleY;
+    qreal scaleX = 1.0 + 0.05 * sin(animationCounter);
+    qreal scaleY = 1.0 - 0.05 * sin(animationCounter);
 
-    // --- 绘制脚部 ---
+    qreal bodyW = bodyPixmap.width();
+    qreal bodyH = bodyPixmap.height();
+
+    // 3. 先绘制脚部，并应用浮动效果
     if (!footPixmap.isNull()) {
-        qreal footScale = 3; // 使用你设置的大尺寸
+        qreal footScale = 2;
         qreal footW = footPixmap.width() * footScale;
         qreal footH = footPixmap.height() * footScale;
-        
-        qreal footY = (bodyH / 2) - (footH * 0.7) + footBounce;
-        
-        // 核心改动：调整双脚间距，让它们分开站立
-        qreal footSeparation = bodyW * 0.25; // 脚的中心点到身体中轴的距离
 
-        // 绘制“左”脚 (在角色看来是左脚)
-        QRectF leftFootRect(-footSeparation - footW / 2 + footSwing, footY, footW, footH);
-        painter->drawPixmap(leftFootRect, footPixmap, footPixmap.rect());
-        
-        // 绘制“右”脚 (镜像)
+        qreal footSeparation = bodyW * 0.25; 
+        // 脚的Y坐标应用 bodyBounce，使其随身体一起上下浮动
+        qreal footY = bodyH * 0.3 + bodyBounce; 
+
+        qreal swing = 0;
+        if (moving) {
+            swing = 20 * std::sin(animationCounter * 2.5);
+        }
+
+        // 左脚
         painter->save();
-        painter->translate(footSeparation - footSwing, footY + footH / 2);
-        painter->scale(-1, 1);
-        painter->drawPixmap(QRectF(-footW / 2, -footH / 2, footW, footH), footPixmap, footPixmap.rect());
+        painter->translate(-footSeparation, footY);
+        painter->rotate(15 + swing);
+        painter->drawPixmap(QRectF(-footW / 2, 0, footW, footH), footPixmap, footPixmap.rect());
+        painter->restore();
+
+        // 右脚
+        painter->save();
+        painter->translate(footSeparation, footY);
+        painter->rotate(-15 - swing);
+        painter->drawPixmap(QRectF(-footW / 2, 0, footW, footH), footPixmap, footPixmap.rect());
         painter->restore();
     }
-    
-    // --- 绘制身体 ---
-    QRectF bodyRect(-bodyW / 2.0, -bodyH / 2.0 + bodyBounce, bodyW, bodyH);
-    painter->drawPixmap(bodyRect, bodyPixmap, bodyPixmap.rect());
-    
-    painter->restore(); // 恢复画布状态，取消翻转，以便后续绘制UI元素
 
-    // --- 在正常坐标系中绘制生命条 (这样文字不会被翻转) ---
+    // 4. 后绘制身体，计算一个缩放后的矩形来绘制
+    qreal newWidth = bodyW * scaleX;
+    qreal newHeight = bodyH * scaleY;
+    // 身体的位置也应用 bodyBounce
+    QRectF scaledBodyRect(-newWidth / 2.0, -newHeight / 2.0 + bodyBounce, newWidth, newHeight);
+    painter->drawPixmap(scaledBodyRect, bodyPixmap, bodyPixmap.rect());
+
+    painter->restore();
+
+    // 5. 最后绘制生命条（在所有变换之外）
     if (health < maxHealth) {
-        qreal healthBarY = bodyRect.top() - 12;
-        qreal healthBarWidth = bodyRect.width() * 0.9;
+        qreal healthBarY = -bodyH / 2.0 - 12;
+        qreal healthBarWidth = bodyW * 0.9;
         qreal healthBarX = -healthBarWidth / 2.0;
 
         painter->setBrush(QBrush(Qt::black));
         painter->setPen(QPen(Qt::white, 1));
         painter->drawRect(healthBarX, healthBarY, healthBarWidth, 5);
-        
+
         if (health > 0) {
             float healthPercent = static_cast<float>(health) / maxHealth;
             QColor healthColor = (healthPercent > 0.6f) ? Qt::green : (healthPercent > 0.3f) ? Qt::yellow : Qt::red;
@@ -210,5 +210,18 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
             painter->setPen(Qt::NoPen);
             painter->drawRect(healthBarX + 1, healthBarY + 1, (healthBarWidth - 2) * healthPercent, 3);
         }
+    }
+}
+
+void Player::setMoving(bool m)
+{
+    moving = m;
+}
+
+void Player::increaseAttackRange(float multiplier)
+{
+    attackRange *= multiplier; // 根据倍数提升攻击距离
+    if (attackRange < 0) {
+        attackRange = 0; // 确保攻击距离不会变成负值
     }
 }

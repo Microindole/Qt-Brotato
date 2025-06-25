@@ -37,6 +37,7 @@ void Pause::updateStats(const Player *player)
     ui->attackPowerValueLabel->setText(QString::number(player->getAttackPower()));
     ui->armorValueLabel->setText(QString::number(player->getArmor()));
     ui->speedValueLabel->setText(QString::number(player->getSpeed(), 'f', 1));
+    ui->attackRangeValueLabel->setText(QString::number(player->getAttackRange(), 'f', 1)); // 更新攻击距离
 }
 
 void Pause::onContinueClicked()

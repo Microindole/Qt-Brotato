@@ -37,17 +37,30 @@ void GameWidget::updateGame()
 
 void GameWidget::movePlayer()
 {
-    QPointF pos = player->pos();
-    const float speed = player->getSpeed();
+    if (!player) return;
 
-    if (pressedKeys.contains(Qt::Key_W) || pressedKeys.contains(Qt::Key_Up))    pos.setY(pos.y() - speed);
-    if (pressedKeys.contains(Qt::Key_S) || pressedKeys.contains(Qt::Key_Down))  pos.setY(pos.y() + speed);
-    if (pressedKeys.contains(Qt::Key_A) || pressedKeys.contains(Qt::Key_Left))  pos.setX(pos.x() - speed);
-    if (pressedKeys.contains(Qt::Key_D) || pressedKeys.contains(Qt::Key_Right)) pos.setX(pos.x() + speed);
+    QPointF moveDirection(0, 0);
+    if (pressedKeys.contains(Qt::Key_W)) moveDirection.ry() -= 1;
+    if (pressedKeys.contains(Qt::Key_S)) moveDirection.ry() += 1;
+    if (pressedKeys.contains(Qt::Key_A)) {
+        moveDirection.rx() -= 1;
+        player->setFacingDirection(false); // ←朝左
+    }
+    if (pressedKeys.contains(Qt::Key_D)) {
+        moveDirection.rx() += 1;
+        player->setFacingDirection(true); // →朝右
+    }
 
-    pos.setX(qBound(15.0, pos.x(), gameScene->width() - 15.0));
-    pos.setY(qBound(15.0, pos.y(), gameScene->height() - 15.0));
-    player->setPos(pos);
+    if (!moveDirection.isNull()) {
+        QVector2D moveVec(moveDirection);
+        moveVec.normalize();
+        player->setPos(player->pos() + moveVec.toPointF() * player->getSpeed());
+    }
+
+    player->setPos(QPointF(qBound(15.0, player->pos().x(), gameScene->width() - 15.0),
+                           qBound(15.0, player->pos().y(), gameScene->height() - 15.0)));
+
+    player->setMoving(!moveDirection.isNull());
 }
 
 void GameWidget::spawnEnemy()
@@ -81,16 +94,20 @@ void GameWidget::shootBullets()
     if (enemies.isEmpty() || !player) return;
 
     Enemy *nearestEnemy = nullptr;
-    float minDistance = std::numeric_limits<float>::max();
+    // 核心修正：将玩家的攻击距离作为初始的最小距离
+    float minDistance = player->getAttackRange(); 
+
     for (Enemy *enemy : enemies) {
         float distance = QLineF(player->pos(), enemy->pos()).length();
+        // 寻找在攻击范围内且最近的敌人
         if (distance < minDistance) {
             minDistance = distance;
             nearestEnemy = enemy;
         }
     }
 
-    if (nearestEnemy && minDistance < 300) {
+    // 如果找到了目标敌人（即 nearestEnemy 不是 nullptr），就发射子弹
+    if (nearestEnemy) {
         Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
         gameScene->addItem(bullet);
         bullets.append(bullet);
