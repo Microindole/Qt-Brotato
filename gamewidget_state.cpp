@@ -12,6 +12,7 @@ void GameWidget::pauseGame()
         gameTimer->stop();
         enemySpawnTimer->stop();
         shootTimer->stop();
+        periodicEffectsTimer->stop();
         stopBackgroundMusic();
         showPauseMenu();
     }
@@ -25,6 +26,7 @@ void GameWidget::onContinueGame()
         gameTimer->start(16);
         enemySpawnTimer->start(2000);
         shootTimer->start(600);
+        periodicEffectsTimer->start(1000);
         startBackgroundMusic();
         fpsTimer.start();
         setFocus();
@@ -109,6 +111,7 @@ void GameWidget::gameOver()
     gameTimer->stop();
     enemySpawnTimer->stop();
     shootTimer->stop();
+    periodicEffectsTimer->stop();
     stopBackgroundMusic();
     playGameOverSound();
 
@@ -126,6 +129,7 @@ void GameWidget::onPlayerLevelUp()
     gameTimer->stop();
     enemySpawnTimer->stop();
     shootTimer->stop();
+    periodicEffectsTimer->stop();
     stopBackgroundMusic(); // 升级时暂停背景音乐
 
     showUpgradeMenu();
@@ -157,6 +161,7 @@ void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
     gameTimer->start(16);
     enemySpawnTimer->start(); // 使用它之前的间隔
     shootTimer->start();      // 使用它之前的间隔
+    periodicEffectsTimer->start(1000);
     startBackgroundMusic();
     fpsTimer.start();
     setFocus();

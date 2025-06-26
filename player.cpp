@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cmath>
 
-Player::Player()
+Player::Player(CharacterType type)
     : QObject()
     , QGraphicsEllipseItem()
     , maxHealth(60)
@@ -13,8 +13,9 @@ Player::Player()
     , speed(2.8f)
     , level(1)
     , experience(0)
-    , expToNextLevel(100)
+    , expToNextLevel(30)
     , healthRegen(0.0f)
+    , healthRegenAccumulator(0.0f)
     , attackPower(10)
     , armor(0)
     , coins(0)
@@ -22,8 +23,9 @@ Player::Player()
     , facingRight(true) // <-- 初始化朝向为右
     , moving(false)
 {
+
+    initializeStats(type);
     // 加载图片资源
-    bodyPixmap.load(":/images/quanneng.png");
     footPixmap.load(":/images/foot.png");
     
     // 设置碰撞区域 - 基于身体和脚部的组合大小
@@ -33,7 +35,7 @@ Player::Player()
         
         qreal totalHeight = bodyHeight;
         if (!footPixmap.isNull()) {
-            totalHeight += footPixmap.height() * 0.6; // 脚部与身体有部分重叠
+            totalHeight += footPixmap.height() * 0.6;
         }
         
         qreal collisionWidth = bodyWidth * 0.8;
@@ -45,6 +47,43 @@ Player::Player()
     }
 
     animationCounter = QRandomGenerator::global()->generateDouble() * 2 * 3.14159;
+}
+
+// 根据角色类型设置属性
+void Player::initializeStats(CharacterType type)
+{
+    switch (type) {
+    case AllRounder:
+        bodyPixmap.load(":/images/quanneng.png");
+        maxHealth = 100;
+        attackPower = 10;
+        attackRange = 300;
+        healthRegen = 0;
+        break;
+    case Fighter: // 斗士：伤害高，血量少
+        bodyPixmap.load(":/images/doushi.png");
+        maxHealth = 80;
+        attackPower = 15; // 伤害更高
+        attackRange = 300;
+        healthRegen = 0;
+        break;
+    case Doctor: // 医生：攻击低，自带回血
+        bodyPixmap.load(":/images/doctor.png");
+        maxHealth = 100;
+        attackPower = 7; // 攻击更低
+        attackRange = 300;
+        healthRegen = 0.5f; // 初始就有生命再生
+        break;
+    case Bull: // 公牛：血量高，攻击距离短
+        bodyPixmap.load(":/images/gongniu.png");
+        maxHealth = 150; // 血量更高
+        attackPower = 10;
+        attackRange = 150; // 攻击距离更短
+        healthRegen = 0;
+        break;
+    }
+    // 将当前生命值设为最大生命值
+    health = maxHealth;
 }
 
 void Player::setFacingDirection(bool right)
@@ -85,7 +124,7 @@ void Player::advance(int phase)
 
 void Player::takeDamage(int damage)
 {
-    // 护甲减伤逻辑
+    // 护甲减伤
     int reducedDamage = damage * (100 - armor) / 100;
     health -= reducedDamage;
     if (health < 0) {
@@ -130,8 +169,20 @@ void Player::levelUp()
 
 void Player::regenerateHealth()
 {
-    if (healthRegen > 0 && health < maxHealth) {
-        heal(static_cast<int>(healthRegen));
+    // 如果没有再生属性，或者玩家是满血状态，则不做任何事
+    if (healthRegen <= 0 || health >= maxHealth) {
+        return;
+    }
+    // 将当前的再生值累加到累积器中
+    healthRegenAccumulator += healthRegen;
+    // 检查累积器是否至少达到了1.0
+    if (healthRegenAccumulator >= 1.0f) {
+        // 计算可以治疗的整数血量
+        int healAmount = static_cast<int>(healthRegenAccumulator);
+        // 执行治疗
+        heal(healAmount);
+        // 从累积器中减去已经治疗过的整数部分
+        healthRegenAccumulator -= healAmount;
     }
 }
 

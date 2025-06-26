@@ -11,7 +11,15 @@ class Player : public QObject, public QGraphicsEllipseItem
     Q_OBJECT
 
 public:
-    Player();
+    // 角色类型的枚举
+    enum CharacterType {
+        AllRounder, // 全能
+        Fighter,    // 斗士
+        Doctor,     // 医生
+        Bull        // 公牛
+    };
+
+    explicit Player(CharacterType type = AllRounder);
     
     // 属性获取器
     int getHealth() const { return health; }
@@ -57,6 +65,7 @@ protected:
 private:
     void levelUp();
     int calculateExpForLevel(int level);
+    void initializeStats(CharacterType type);
 
     // 属性
     int health;
@@ -66,6 +75,7 @@ private:
     int experience;
     int expToNextLevel;
     float healthRegen;
+    float healthRegenAccumulator;
     int attackPower;
     int armor;
     int attackRange = 3000;

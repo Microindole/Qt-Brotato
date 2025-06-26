@@ -48,6 +48,9 @@ private slots:
     void restartGame();
     void showControls();
     void showAbout();
+
+    // 周期性效果的槽函数
+    void onPeriodicEffects();
     
     // 暂停界面槽函数
     void onContinueGame();
@@ -67,6 +70,7 @@ private slots:
     void onUpgradeSelected(UpgradeWidget::UpgradeType type);
 
 private:
+    Player::CharacterType m_selectedCharacter = Player::Doctor; // 在这里选择你想测试的角色
     void setupGame();
     void setupAudio();
     void connectActions();
@@ -111,6 +115,7 @@ private:
     QTimer *gameTimer;
     QTimer *enemySpawnTimer;
     QTimer *shootTimer;
+    QTimer *periodicEffectsTimer;
     QElapsedTimer fpsTimer;
 
     // 音频组件

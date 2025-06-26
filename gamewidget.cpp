@@ -26,6 +26,7 @@ GameWidget::GameWidget(QWidget *parent)
     , gameTimer(new QTimer(this))
     , enemySpawnTimer(new QTimer(this))
     , shootTimer(new QTimer(this))
+    , periodicEffectsTimer(new QTimer(this))
     , backgroundMusic(nullptr)
     , backgroundAudioOutput(nullptr)
     , shootSound(nullptr)
@@ -61,6 +62,7 @@ GameWidget::GameWidget(QWidget *parent)
     connect(gameTimer, &QTimer::timeout, this, &GameWidget::updateGame);
     connect(enemySpawnTimer, &QTimer::timeout, this, &GameWidget::spawnEnemy);
     connect(shootTimer, &QTimer::timeout, this, &GameWidget::shootBullets);
+    connect(periodicEffectsTimer, &QTimer::timeout, this, &GameWidget::onPeriodicEffects);
 
     connect(pauseWidget, &Pause::continueGame, this, &GameWidget::onContinueGame);
     connect(pauseWidget, &Pause::restartGame, this, &GameWidget::onRestartFromPause);
@@ -137,7 +139,7 @@ void GameWidget::restartGame()
         delete player;
         player = nullptr;
     }
-    player = new Player();
+    player = new Player(m_selectedCharacter); // 使用特定角色类型
     player->showHealthBar = m_showHealthBars;
     connect(player, &Player::levelUpOccurred, this, &GameWidget::onPlayerLevelUp);
 
@@ -161,6 +163,7 @@ void GameWidget::restartGame()
     gameTimer->start(16); // ~60 FPS
     enemySpawnTimer->start(2000);
     shootTimer->start(600);
+    periodicEffectsTimer->start(1000);
     fpsTimer.start();
     frameCount = 0;
 

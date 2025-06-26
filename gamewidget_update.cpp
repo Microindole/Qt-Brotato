@@ -7,6 +7,15 @@
 #include <QLineF>
 #include <limits>
 
+void GameWidget::onPeriodicEffects()
+{
+    // 如果游戏正在运行且玩家存在
+    if (gameRunning && !gamePaused && player) {
+        // 调用玩家的生命再生函数
+        player->regenerateHealth();
+    }
+}
+
 void GameWidget::updateGame()
 {
     if (!gameRunning || gamePaused || !player) return;
