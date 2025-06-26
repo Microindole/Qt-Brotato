@@ -2,6 +2,7 @@
 #include "bullet.h"
 #include "enemy.h"
 #include "coin.h"
+#include "resourcemanager.h"
 
 void GameWidget::checkCollisions()
 {
@@ -13,7 +14,7 @@ void GameWidget::checkCollisions()
         for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
             if ((*bulletIt)->collidesWithItem(*enemyIt)) {
                 (*enemyIt)->takeDamage(player->getAttackPower());
-                playHitSound();
+                ResourceManager::instance().playSound("hit");
                 
                 if ((*enemyIt)->isDead()) {
                     player->gainExperience((*enemyIt)->getExperienceValue());
@@ -46,7 +47,7 @@ void GameWidget::checkCollisions()
     for (auto enemyIt = enemies.begin(); enemyIt != enemies.end();) {
         if ((*enemyIt)->collidesWithItem(player)) {
             player->takeDamage((*enemyIt)->getDamage());
-            playHitSound();
+            ResourceManager::instance().playSound("hit");
             if (player->getHealth() <= 0) {
                 gameOver();
                 return;
@@ -64,7 +65,7 @@ void GameWidget::checkCollisions()
         if (player->collidesWithItem(*coinIt)) {
             // 玩家拾取金币
             player->addCoins((*coinIt)->getValue());
-            playCoinPickupSound(); // 播放音效
+            ResourceManager::instance().playSound("coin"); // 播放音效
 
             // 从场景和列表中移除金币
             gameScene->removeItem(*coinIt);

@@ -1,4 +1,5 @@
 #include "player.h"
+#include "resourcemanager.h"
 #include <QBrush>
 #include <QPen>
 #include <QRandomGenerator>
@@ -13,7 +14,7 @@ Player::Player(CharacterType type)
     , speed(2.8f)
     , level(1)
     , experience(0)
-    , expToNextLevel(30)
+    , expToNextLevel(10)
     , healthRegen(0.0f)
     , healthRegenAccumulator(0.0f)
     , attackPower(10)
@@ -26,7 +27,7 @@ Player::Player(CharacterType type)
 
     initializeStats(type);
     // 加载图片资源
-    footPixmap.load(":/images/foot.png");
+    footPixmap = ResourceManager::instance().getPixmap(":/images/foot.png");
     
     // 设置碰撞区域 - 基于身体和脚部的组合大小
     if (!bodyPixmap.isNull()) {
@@ -52,37 +53,39 @@ Player::Player(CharacterType type)
 // 根据角色类型设置属性
 void Player::initializeStats(CharacterType type)
 {
+    QString bodyPixmapPath;
     switch (type) {
     case AllRounder:
-        bodyPixmap.load(":/images/quanneng.png");
-        maxHealth = 100;
+        bodyPixmapPath = ":/images/quanneng.png";
+        maxHealth = 50;
         attackPower = 10;
-        attackRange = 300;
+        attackRange = 800;
         healthRegen = 0;
         break;
     case Fighter: // 斗士：伤害高，血量少
-        bodyPixmap.load(":/images/doushi.png");
-        maxHealth = 80;
+        bodyPixmapPath = ":/images/doushi.png";
+        maxHealth = 40;
         attackPower = 15; // 伤害更高
-        attackRange = 300;
+        attackRange = 800;
         healthRegen = 0;
         break;
     case Doctor: // 医生：攻击低，自带回血
-        bodyPixmap.load(":/images/doctor.png");
-        maxHealth = 100;
+        bodyPixmapPath = ":/images/doctor.png";
+        maxHealth = 50;
         attackPower = 7; // 攻击更低
-        attackRange = 300;
+        attackRange = 800;
         healthRegen = 0.5f; // 初始就有生命再生
         break;
     case Bull: // 公牛：血量高，攻击距离短
-        bodyPixmap.load(":/images/gongniu.png");
-        maxHealth = 150; // 血量更高
+        bodyPixmapPath = ":/images/gongniu.png";
+        maxHealth = 75; // 血量更高
         attackPower = 10;
-        attackRange = 150; // 攻击距离更短
+        attackRange = 400; // 攻击距离更短
         healthRegen = 0;
         break;
     }
     // 将当前生命值设为最大生命值
+    bodyPixmap = ResourceManager::instance().getPixmap(bodyPixmapPath);
     health = maxHealth;
 }
 

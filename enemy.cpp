@@ -1,4 +1,5 @@
 #include "enemy.h"
+#include "resourcemanager.h"
 #include <QBrush>
 #include <QPen>
 #include <QRandomGenerator>
@@ -13,14 +14,14 @@ Enemy::Enemy(int waveNumber)
 
     // 根据类型加载不同的图片和设置不同的属性
     if (type == Type1) {
-        pixmap.load(":/images/common1.png");
+        pixmap = ResourceManager::instance().getPixmap(":/images/common1.png");
         // 类型1: 基础型，血厚攻高
         speed = 0.7f + (waveNumber - 1) * 0.05f;
         damage = 10 + (waveNumber - 1) * 2;
         maxHealth = 60 + (waveNumber - 1) * 10;
         experienceValue = 5;
     } else { // Type2
-        pixmap.load(":/images/common2.png");
+        pixmap = ResourceManager::instance().getPixmap(":/images/common2.png");
         // 类型2: 速度更快，但更脆弱
         speed = 1.0f + (waveNumber - 1) * 0.07f;
         damage = 8 + (waveNumber - 1) * 2;

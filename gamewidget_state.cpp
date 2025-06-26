@@ -1,5 +1,6 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
+#include "resourcemanager.h"
 #include <QMessageBox>
 #include <QRandomGenerator>
 
@@ -13,7 +14,7 @@ void GameWidget::pauseGame()
         enemySpawnTimer->stop();
         shootTimer->stop();
         periodicEffectsTimer->stop();
-        stopBackgroundMusic();
+        pauseBackgroundMusic();
         showPauseMenu();
     }
 }
@@ -27,7 +28,7 @@ void GameWidget::onContinueGame()
         enemySpawnTimer->start(2000);
         shootTimer->start(600);
         periodicEffectsTimer->start(1000);
-        startBackgroundMusic();
+        resumeBackgroundMusic();
         fpsTimer.start();
         setFocus();
     }
@@ -113,7 +114,7 @@ void GameWidget::gameOver()
     shootTimer->stop();
     periodicEffectsTimer->stop();
     stopBackgroundMusic();
-    playGameOverSound();
+    ResourceManager::instance().playSound("gameover");
 
     QMessageBox::information(this, "游戏结束",
         QString("土豆兄弟倒下了！\n\n你的分数: %1\n到达波次: %2").arg(score).arg(wave));
@@ -130,7 +131,7 @@ void GameWidget::onPlayerLevelUp()
     enemySpawnTimer->stop();
     shootTimer->stop();
     periodicEffectsTimer->stop();
-    stopBackgroundMusic(); // 升级时暂停背景音乐
+    pauseBackgroundMusic(); // 升级时暂停背景音乐
 
     showUpgradeMenu();
 }
@@ -162,7 +163,7 @@ void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
     enemySpawnTimer->start(); // 使用它之前的间隔
     shootTimer->start();      // 使用它之前的间隔
     periodicEffectsTimer->start(1000);
-    startBackgroundMusic();
+    resumeBackgroundMusic();
     fpsTimer.start();
     setFocus();
 }

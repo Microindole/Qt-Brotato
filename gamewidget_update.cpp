@@ -3,6 +3,7 @@
 #include "enemy.h"
 #include "bullet.h"
 #include "coin.h"
+#include "resourcemanager.h"
 #include <QRandomGenerator>
 #include <QLineF>
 #include <limits>
@@ -131,7 +132,7 @@ void GameWidget::shootBullets()
         Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
         gameScene->addItem(bullet);
         bullets.append(bullet);
-        playShootSound();
+        ResourceManager::instance().playSound("shoot");
     }
 }
 

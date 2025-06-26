@@ -85,12 +85,10 @@ private:
     void showUpgradeMenu();
     
     // 音频函数
-    void playShootSound();
-    void playHitSound();
-    void playGameOverSound();
-    void playCoinPickupSound();
     void startBackgroundMusic();
     void stopBackgroundMusic();
+    void pauseBackgroundMusic();
+    void resumeBackgroundMusic();
 
     // 音量控制
     void setMusicVolume(float volume);
@@ -121,14 +119,6 @@ private:
     // 音频组件
     QMediaPlayer *backgroundMusic;
     QAudioOutput *backgroundAudioOutput;
-    QMediaPlayer *shootSound;
-    QAudioOutput *shootAudioOutput;
-    QMediaPlayer *hitSound;
-    QAudioOutput *hitAudioOutput;
-    QMediaPlayer *gameOverSound;
-    QAudioOutput *gameOverAudioOutput;
-    QMediaPlayer *coinPickupSound;
-    QAudioOutput *coinPickupAudioOutput;
 
     // 游戏状态
     QSet<int> pressedKeys;
