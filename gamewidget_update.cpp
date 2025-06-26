@@ -107,7 +107,7 @@ void GameWidget::shootBullets()
 
     Enemy *nearestEnemy = nullptr;
     // 核心修正：将玩家的攻击距离作为初始的最小距离
-    float minDistance = player->getAttackRange(); 
+    float minDistance = player->getAttackRange();
 
     for (Enemy *enemy : enemies) {
         float distance = QLineF(player->pos(), enemy->pos()).length();

@@ -43,7 +43,7 @@ Player::Player()
     } else {
         setRect(-15, -15, 30, 30);
     }
-    
+
     animationCounter = QRandomGenerator::global()->generateDouble() * 2 * 3.14159;
 }
 
