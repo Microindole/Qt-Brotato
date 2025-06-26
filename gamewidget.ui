@@ -124,6 +124,13 @@ QProgressBar#expBar::chunk {
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="coinLabel">
+        <property name="text">
+         <string>💰 金币: 0</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="waveLabel">
         <property name="text">
          <string>🌊 波次: 1</string>

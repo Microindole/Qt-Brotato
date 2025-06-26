@@ -14,6 +14,8 @@ void GameWidget::updateUI()
         ui->expBar->setMaximum(player->getExpToNextLevel());
         ui->expBar->setValue(player->getExperience());
         ui->expBar->setFormat(QString("LV.%1").arg(player->getLevel()));
+
+        ui->coinLabel->setText(QString("💰 金币: %1").arg(player->getCoins()));
         
     }
     ui->scoreLabel->setText(QString("🏆 分数: %1").arg(score));

@@ -39,8 +39,8 @@
     <!-- 辅助系统图片 -->
     <file>images/coin.png</file> <!-- 生命值 -->
     <file>images/tree.png</file> <!-- 树 -->
-    <file>images/redmark</file> <!-- 怪标记 -->
-    <file>images/treemark</file> <!-- 树标记 -->
+    <file>images/redmark.png</file> <!-- 怪标记 -->
+    <file>images/treemark.png</file> <!-- 树标记 -->
 
 </qresource>
 </RCC>

@@ -2,6 +2,7 @@
 #include "ui_gamewidget.h"
 #include "enemy.h"
 #include "bullet.h"
+#include "coin.h"
 #include <QRandomGenerator>
 #include <QLineF>
 #include <limits>
@@ -89,6 +90,15 @@ void GameWidget::spawnEnemy()
         gameScene->addItem(enemy);
         enemies.append(enemy);
     }
+}
+
+// 生成金币
+void GameWidget::spawnCoin(const QPointF &position)
+{
+    Coin *coin = new Coin();
+    coin->setPos(position);
+    gameScene->addItem(coin);
+    coins.append(coin);
 }
 
 void GameWidget::shootBullets()

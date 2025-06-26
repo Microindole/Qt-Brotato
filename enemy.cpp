@@ -28,6 +28,9 @@ Enemy::Enemy(int waveNumber)
         experienceValue = 3;
     }
     health = maxHealth;
+
+    // 怪物在金币之上
+    setZValue(0);
     
     // 限制最大属性
     speed = qMin(speed, 2.5f);

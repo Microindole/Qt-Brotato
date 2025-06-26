@@ -25,6 +25,8 @@ public:
     int getArmor() const { return armor; }
     int getAttackRange() const { return attackRange; }
     bool showHealthBar = true;
+    int getCoins() const;
+    void addCoins(int amount);
 
     // 功能
     void takeDamage(int damage);
@@ -67,6 +69,7 @@ private:
     int attackPower;
     int armor;
     int attackRange = 3000;
+    int coins;
     
     // 动画
     QPixmap bodyPixmap;

@@ -16,6 +16,7 @@
 #include "pause.h"
 #include "settings.h"
 #include "upgradewidget.h"
+#include "coin.h"
 
 namespace Ui {
 class GameWidget;
@@ -83,12 +84,16 @@ private:
     void playShootSound();
     void playHitSound();
     void playGameOverSound();
+    void playCoinPickupSound();
     void startBackgroundMusic();
     void stopBackgroundMusic();
 
     // 音量控制
     void setMusicVolume(float volume);
     void setSfxVolume(float volume);
+
+    // 金币商店
+    void spawnCoin(const QPointF &position);
 
     Ui::GameWidget *ui;
     
@@ -97,6 +102,7 @@ private:
     Player *player;
     QList<Enemy*> enemies;
     QList<Bullet*> bullets;
+    QList<Coin*> coins;
     Pause *pauseWidget;
     Settings *settingsWidget;
     UpgradeWidget *upgradeWidget;
@@ -116,6 +122,8 @@ private:
     QAudioOutput *hitAudioOutput;
     QMediaPlayer *gameOverSound;
     QAudioOutput *gameOverAudioOutput;
+    QMediaPlayer *coinPickupSound;
+    QAudioOutput *coinPickupAudioOutput;
 
     // 游戏状态
     QSet<int> pressedKeys;

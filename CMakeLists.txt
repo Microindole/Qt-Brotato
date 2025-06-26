@@ -45,6 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         settings.h settings.cpp settings.ui
         upgradewidget.h upgradewidget.cpp
         dynamicbackground.h dynamicbackground.cpp
+        coin.h coin.cpp
 
     )
 

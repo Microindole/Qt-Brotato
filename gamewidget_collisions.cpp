@@ -1,6 +1,7 @@
 #include "gamewidget.h"
 #include "bullet.h"
 #include "enemy.h"
+#include "coin.h"
 
 void GameWidget::checkCollisions()
 {
@@ -18,6 +19,7 @@ void GameWidget::checkCollisions()
                     player->gainExperience((*enemyIt)->getExperienceValue());
                     score += 5;
                     enemiesKilled++;
+                    spawnCoin((*enemyIt)->pos());
                     gameScene->removeItem(*enemyIt);
                     delete *enemyIt;
                     enemyIt = enemies.erase(enemyIt);
@@ -54,6 +56,22 @@ void GameWidget::checkCollisions()
             enemyIt = enemies.erase(enemyIt);
         } else { 
             ++enemyIt; 
+        }
+    }
+
+    // 玩家与金币碰撞
+    for (auto coinIt = coins.begin(); coinIt != coins.end();) {
+        if (player->collidesWithItem(*coinIt)) {
+            // 玩家拾取金币
+            player->addCoins((*coinIt)->getValue());
+            playCoinPickupSound(); // 播放音效
+
+            // 从场景和列表中移除金币
+            gameScene->removeItem(*coinIt);
+            delete *coinIt;
+            coinIt = coins.erase(coinIt);
+        } else {
+            ++coinIt;
         }
     }
 }

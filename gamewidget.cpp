@@ -34,6 +34,8 @@ GameWidget::GameWidget(QWidget *parent)
     , hitAudioOutput(nullptr)
     , gameOverSound(nullptr)
     , gameOverAudioOutput(nullptr)
+    , coinPickupSound(nullptr)
+    , coinPickupAudioOutput(nullptr)
     , score(0)
     , wave(1)
     , enemiesKilled(0)
@@ -143,6 +145,8 @@ void GameWidget::restartGame()
     enemies.clear();
     qDeleteAll(bullets);
     bullets.clear();
+    qDeleteAll(coins);
+    coins.clear();
 
     score = 0;
     wave = 1;

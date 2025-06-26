@@ -17,6 +17,7 @@ Player::Player()
     , healthRegen(0.0f)
     , attackPower(10)
     , armor(0)
+    , coins(0)
     , animationCounter(0.0)
     , facingRight(true) // <-- 初始化朝向为右
     , moving(false)
@@ -266,5 +267,17 @@ void Player::increaseSpeed(float amount)
 void Player::increaseHealthRegen(float amount)
 {
     healthRegen += amount;
+}
+
+int Player::getCoins() const
+{
+    return coins;
+}
+
+void Player::addCoins(int amount)
+{
+    if (amount > 0) {
+        coins += amount;
+    }
 }
 
