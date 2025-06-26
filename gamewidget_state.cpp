@@ -50,6 +50,7 @@ void GameWidget::onOpenSettings()
     pauseWidget->hide();
     
     settingsWidget->setInitialVolumes(currentMusicVolume, currentSfxVolume);
+    settingsWidget->setInitialHealthBarVisibility(m_showHealthBars);
     settingsWidget->resize(this->size());
     settingsWidget->move(0, 0);
     settingsWidget->show();
@@ -65,6 +66,22 @@ void GameWidget::onMusicVolumeChanged(float volume)
 void GameWidget::onSfxVolumeChanged(float volume)
 {
     setSfxVolume(volume);
+}
+
+void GameWidget::onHealthBarVisibilityChanged(bool visible)
+{
+    // 1. 更新 GameWidget 的全局设置
+    m_showHealthBars = visible;
+
+    // 2. 将新设置应用到玩家
+    if (player) {
+        player->showHealthBar = m_showHealthBars;
+    }
+
+    // 3. 遍历当前屏幕上所有的敌人，并应用新设置
+    for (Enemy *enemy : enemies) {
+        enemy->showHealthBar = m_showHealthBars;
+    }
 }
 
 void GameWidget::onSettingsClosed()

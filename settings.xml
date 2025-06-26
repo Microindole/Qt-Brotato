@@ -45,28 +45,6 @@ QLabel {
     font-weight: bold;
 }
 
-/* 复选框 */
-QCheckBox {
-    spacing: 5px;
-    color: #cccccc;
-}
-
-QCheckBox::indicator {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #555;
-    border-radius: 5px;
-}
-
-QCheckBox::indicator:unchecked {
-    background-color: #333;
-}
-
-QCheckBox::indicator:checked {
-    background-color: #4CAF50;
-    image: url(:/images/checkmark.png); /* 您可能需要一个对勾图片资源 */
-}
-
 /* 滑块 */
 QSlider::groove:horizontal {
     border: 1px solid #bbb;
@@ -136,7 +114,7 @@ QPushButton:pressed {
       <item>
        <widget class="QLabel" name="titleLabel">
         <property name="text">
-         <string>设置</string>
+         <string>声音设置</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -211,27 +189,6 @@ QPushButton:pressed {
          <widget class="QLabel" name="sfxValueLabel">
           <property name="text">
            <string>100%</string>
-          </property>
-         </widget>
-        </item>
-        <!-- ===== 新增行：血条开关 ===== -->
-        <item row="2" column="0">
-         <widget class="QLabel" name="healthBarLabel">
-          <property name="text">
-           <string>显示血条</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QCheckBox" name="healthBarCheckBox">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
           </property>
          </widget>
         </item>

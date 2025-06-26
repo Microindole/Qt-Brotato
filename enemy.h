@@ -27,6 +27,7 @@ public:
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     bool isDead() const { return health <= 0; }
+    bool showHealthBar = true;
     
     void advance(int phase) override;
 

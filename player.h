@@ -24,6 +24,7 @@ public:
     int getAttackPower() const { return attackPower; }
     int getArmor() const { return armor; }
     int getAttackRange() const { return attackRange; }
+    bool showHealthBar = true;
 
     // 功能
     void takeDamage(int damage);

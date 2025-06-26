@@ -73,6 +73,8 @@ void GameWidget::spawnEnemy()
 
     for (int i = 0; i < enemiesToSpawn; ++i) {
         Enemy *enemy = new Enemy(wave);
+        // 当新敌人诞生时，是否要显示血条
+        enemy->showHealthBar = m_showHealthBars;
         int side = QRandomGenerator::global()->bounded(4);
         QPointF pos;
 

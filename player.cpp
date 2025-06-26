@@ -213,7 +213,9 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     painter->restore();
 
     // 最后绘制生命条（在所有变换之外）
-    if (health < maxHealth) {
+    if (showHealthBar && health < maxHealth) {
+        qreal bodyH = bodyPixmap.height();
+        qreal bodyW = bodyPixmap.width();
         qreal healthBarY = -bodyH / 2.0 - 12;
         qreal healthBarWidth = bodyW * 0.9;
         qreal healthBarX = -healthBarWidth / 2.0;

@@ -59,6 +59,7 @@ private slots:
     void onMusicVolumeChanged(float volume);
     void onSfxVolumeChanged(float volume);
     void onSettingsClosed();
+    void onHealthBarVisibilityChanged(bool visible);
 
     // 升级流程的槽函数声明
     void onPlayerLevelUp();
@@ -123,6 +124,7 @@ private:
     int enemiesKilled;
     float currentMusicVolume;
     float currentSfxVolume;
+    bool m_showHealthBars;
     bool gameRunning;
     bool gamePaused;
     int frameCount;

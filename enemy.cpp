@@ -115,21 +115,25 @@ void Enemy::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
     painter->restore();
 
     // 血条
-    qreal healthBarY = scaledRect.top() - 8;
-    qreal healthBarWidth = originalRect.width() * 0.9;
-    qreal healthBarX = -healthBarWidth / 2.0;
+    // 绘制血条，并检查 showHealthBar 标志
+    if (showHealthBar) {
+        QRectF originalRect = rect();
+        qreal healthBarY = scaledRect.top() - 8;
+        qreal healthBarWidth = originalRect.width() * 0.9;
+        qreal healthBarX = -healthBarWidth / 2.0;
 
-    painter->setBrush(QBrush(Qt::black));
-    painter->setPen(QPen(Qt::white, 1));
-    painter->drawRect(healthBarX, healthBarY, healthBarWidth, 5);
+        painter->setBrush(QBrush(Qt::black));
+        painter->setPen(QPen(Qt::white, 1));
+        painter->drawRect(healthBarX, healthBarY, healthBarWidth, 5);
 
-    if (health > 0) {
-        float healthPercent = static_cast<float>(health) / maxHealth;
-        QColor healthColor = (healthPercent > 0.6f) ? Qt::green : (healthPercent > 0.3f) ? Qt::yellow : Qt::red;
+        if (health > 0) {
+            float healthPercent = static_cast<float>(health) / maxHealth;
+            QColor healthColor = (healthPercent > 0.6f) ? Qt::green : (healthPercent > 0.3f) ? Qt::yellow : Qt::red;
 
-        painter->setBrush(QBrush(healthColor));
-        painter->setPen(Qt::NoPen);
-        painter->drawRect(healthBarX + 1, healthBarY + 1, (healthBarWidth - 2) * healthPercent, 3);
+            painter->setBrush(QBrush(healthColor));
+            painter->setPen(Qt::NoPen);
+            painter->drawRect(healthBarX + 1, healthBarY + 1, (healthBarWidth - 2) * healthPercent, 3);
+        }
     }
 }
 

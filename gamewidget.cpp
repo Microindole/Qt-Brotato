@@ -39,6 +39,7 @@ GameWidget::GameWidget(QWidget *parent)
     , enemiesKilled(0)
     , currentMusicVolume(0.7f)
     , currentSfxVolume(0.2f)
+    , m_showHealthBars(true)
     , gameRunning(false)
     , gamePaused(false)
     , frameCount(0)
@@ -68,6 +69,8 @@ GameWidget::GameWidget(QWidget *parent)
     connect(settingsWidget, &Settings::backgroundMusicVolumeChanged, this, &GameWidget::onMusicVolumeChanged);
     connect(settingsWidget, &Settings::soundEffectsVolumeChanged, this, &GameWidget::onSfxVolumeChanged);
     connect(settingsWidget, &Settings::backClicked, this, &GameWidget::onSettingsClosed);
+    connect(settingsWidget, &Settings::healthBarVisibilityChanged, this, &GameWidget::onHealthBarVisibilityChanged);
+
 
     connect(upgradeWidget, &UpgradeWidget::upgradeSelected, this, &GameWidget::onUpgradeSelected);
 }
@@ -78,7 +81,6 @@ GameWidget::~GameWidget()
 }
 
 // --- 游戏主流程 ---
-
 void GameWidget::startGame()
 {
     if (!gameInitialized) {
@@ -134,6 +136,7 @@ void GameWidget::restartGame()
         player = nullptr;
     }
     player = new Player();
+    player->showHealthBar = m_showHealthBars;
     connect(player, &Player::levelUpOccurred, this, &GameWidget::onPlayerLevelUp);
 
     qDeleteAll(enemies);
