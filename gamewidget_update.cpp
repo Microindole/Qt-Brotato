@@ -86,6 +86,9 @@ void GameWidget::spawnEnemy()
         Enemy *enemy = new Enemy(wave);
         // 当新敌人诞生时，是否要显示血条
         enemy->showHealthBar = m_showHealthBars;
+        if (enemy->getType() == Enemy::Ranged) {
+            connect(enemy, &Enemy::fireBullet, this, &GameWidget::onEnemyFireBullet);
+        }
         int side = QRandomGenerator::global()->bounded(4);
         QPointF pos;
 
@@ -129,7 +132,7 @@ void GameWidget::shootBullets()
     }
 
     if (nearestEnemy) {
-        Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos());
+        Bullet *bullet = new Bullet(player->pos(), nearestEnemy->pos(), Bullet::PlayerBullet, player->getAttackPower());
         gameScene->addItem(bullet);
         bullets.append(bullet);
         ResourceManager::instance().playSound("shoot");

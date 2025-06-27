@@ -5,22 +5,28 @@
 #include <QPointF>
 #include <QPainter>
 #include <QPixmap>
+#include <QObject>
+#include <QGraphicsScene>
 
-class Enemy : public QGraphicsEllipseItem
+class Enemy : public QObject, public QGraphicsEllipseItem
 {
+    Q_OBJECT
+
 public:
     enum EnemyType {
-        Type1, // common1.png
-        Type2  // common2.png
+        Common_Type1, // 普通近战1
+        Common_Type2, // 普通近战2
+        Charger,      // 冲刺怪
+        Ranged        // 远程怪
     };
 
     Enemy(int waveNumber = 1);
+    ~Enemy();
     
     QRectF boundingRect() const override;
     
     void moveTowards(const QPointF &target);
-    int getDamage() const { return damage; }
-    float getSpeed() const { return speed; }
+    int getDamage() const;
     int getExperienceValue() const { return experienceValue; }
     
     void takeDamage(int dmg);
@@ -28,24 +34,50 @@ public:
     int getMaxHealth() const { return maxHealth; }
     bool isDead() const { return health <= 0; }
     bool showHealthBar = true;
+
+    EnemyType getType() const { return type; }
     
     void advance(int phase) override;
+
+signals:
+    // 远程怪请求发射子弹时发出此信号
+    void fireBullet(const QPointF& from, const QPointF& to);
 
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    float speed;
+    // 状态机，用于冲刺怪
+    enum ChargeState {
+        Idle,       // 正常移动
+        Preparing,  // 准备冲刺（例如：停顿、变色）
+        Charging,   // 正在冲刺
+        Cooldown    // 冲刺后冷却
+    };
+
+    // 基础属性
+    EnemyType type;
+    float baseSpeed;
     int damage;
     int health;
     int maxHealth;
     int waveLevel;
-    int experienceValue; // 击败敌人后玩家获得的经验值
+    int experienceValue;
 
-    EnemyType type;
-    QPixmap pixmap; // 使用单个 pixmap
-    double animationCounter; // 用于动画
-    bool facingRight = true; // 新增：记录当前朝向 (true=右, false=左)
+    // 视觉和动画
+    QPixmap pixmap;
+    double animationCounter;
+    bool facingRight = true;
+
+    // 冲刺怪相关
+    ChargeState chargeState = Idle;
+    QTimer* chargeTimer;
+    QPointF chargeTarget;
+    qreal chargeSpeed;
+
+    // 远程怪相关
+    QTimer* rangedAttackTimer;
+    float preferredDistance = 250.0f;
 
 public:
     void setFacingDirection(bool right); // 新增：设置朝向的方法

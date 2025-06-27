@@ -2,6 +2,7 @@
 #include "ui_gamewidget.h"
 #include "bullet.h"
 #include "enemy.h"
+#include "resourcemanager.h"
 #include <QBrush>
 #include <QPixmap>
 #include <QTimer>
@@ -168,4 +169,21 @@ void GameWidget::restartGame()
 void GameWidget::setCharacter(Player::CharacterType type)
 {
     m_selectedCharacter = type;
+}
+
+void GameWidget::onEnemyFireBullet(const QPointF& from, const QPointF& to_placeholder)
+{
+    Q_UNUSED(to_placeholder); // 我们不再使用这个参数，因为会直接瞄准玩家
+
+    if (!player) return; // 如果玩家不存在，则不发射
+
+    // 创建一颗属于敌人的子弹，目标是玩家的当前位置
+    // 假设远程怪的基础伤害是 8
+    Bullet *bullet = new Bullet(from, player->pos(), Bullet::EnemyBullet, 8);
+
+    gameScene->addItem(bullet);
+    bullets.append(bullet);
+
+    // 播放敌人射击音效
+    ResourceManager::instance().playSound("push");
 }

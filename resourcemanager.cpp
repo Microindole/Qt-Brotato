@@ -6,7 +6,7 @@
 // 返回单例实例的引用
 ResourceManager& ResourceManager::instance()
 {
-    static ResourceManager instance; // C++11保证静态局部变量的线程安全初始化
+    static ResourceManager instance;
     return instance;
 }
 
@@ -30,7 +30,7 @@ void ResourceManager::preloadAssets()
 {
     qInfo() << "ResourceManager: Preloading assets...";
 
-    // 1. 预加载并缓存缩放后的背景图，这是解决启动卡顿的关键
+    // 预加载并缓存缩放后的背景图，解决启动卡顿
     QPixmap originalBg(":/images/map.png");
     if (!originalBg.isNull()) {
         QPixmap scaledBg = originalBg.scaled(1920, 1080, Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -39,9 +39,13 @@ void ResourceManager::preloadAssets()
         qWarning() << "ResourceManager: Failed to preload background map.";
     }
 
-    // 2. 预加载所有音效
+    // 预加载所有音效
     m_soundEffectCache["shoot"] = new QSoundEffect(this);
     m_soundEffectCache["shoot"]->setSource(QUrl::fromLocalFile(":/sounds/shoot.wav"));
+
+    m_soundEffectCache["enemy_shoot"] = new QSoundEffect(this);
+    m_soundEffectCache["enemy_shoot"]->setSource(QUrl::fromLocalFile(":/sounds/push.wav"));
+
 
     m_soundEffectCache["hit"] = new QSoundEffect(this);
     m_soundEffectCache["hit"]->setSource(QUrl::fromLocalFile(":/sounds/hit.wav"));
@@ -52,7 +56,7 @@ void ResourceManager::preloadAssets()
     m_soundEffectCache["coin"] = new QSoundEffect(this);
     m_soundEffectCache["coin"]->setSource(QUrl::fromLocalFile(":/sounds/push.wav")); // 假设捡金币音效也是push.wav
 
-    setSfxVolume(0.5f); // 设置一个默认音效音量
+    setSfxVolume(0.3f); // 设置一个默认音效音量
     qInfo() << "ResourceManager: Assets preloaded.";
 }
 

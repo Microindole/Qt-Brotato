@@ -66,6 +66,7 @@ private slots:
     void onSfxVolumeChanged(float volume);
     void onSettingsClosed();
     void onHealthBarVisibilityChanged(bool visible);
+    void onEnemyFireBullet(const QPointF& from, const QPointF& to);
 
     // 升级流程的槽函数声明
     void onPlayerLevelUp();

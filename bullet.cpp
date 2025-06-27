@@ -3,10 +3,11 @@
 #include <QPen>
 #include <cmath>
 
-Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos)
-    : QGraphicsEllipseItem(-8, -8, 16, 16) // 变大
-    , speed(10.0f)
-    , damage(12)
+Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos, Owner owner, int damage, float speed)
+    : QGraphicsEllipseItem(-8, -8, 16, 16)
+    , m_owner(owner)
+    , m_speed(speed)
+    , m_damage(damage)
 {
     setPos(startPos);
 
@@ -16,6 +17,18 @@ Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos)
     if (distance > 0) {
         velocity = (direction / distance) * speed;
     }
+}
+
+// 获取子弹所有者
+Bullet::Owner Bullet::getOwner() const
+{
+    return m_owner;
+}
+
+// 获取伤害值
+int Bullet::getDamage() const
+{
+    return m_damage;
 }
 
 QRectF Bullet::boundingRect() const
@@ -43,17 +56,29 @@ void Bullet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
-    // 发光圈变大
-    painter->setBrush(QBrush(QColor(255, 255, 0, 100)));
+    QColor coreColor;
+    QColor glowColor;
+
+    // 根据所有者选择不同的颜色
+    if (m_owner == PlayerBullet) {
+        coreColor = Qt::yellow;
+        glowColor = QColor(255, 255, 0, 100);
+    } else { // EnemyBullet
+        coreColor = QColor(255, 80, 200); // 敌人的子弹为粉紫色
+        glowColor = QColor(255, 80, 200, 100);
+    }
+
+    // 绘制发光圈
+    painter->setBrush(QBrush(glowColor));
     painter->setPen(Qt::NoPen);
     painter->drawEllipse(-12, -12, 24, 24);
 
-    // 子弹核心变大
-    painter->setBrush(QBrush(Qt::yellow));
-    painter->setPen(QPen(Qt::darkYellow, 2));
+    // 绘制子弹核心
+    painter->setBrush(QBrush(coreColor));
+    painter->setPen(QPen(coreColor.darker(150), 2));
     painter->drawEllipse(-8, -8, 16, 16);
 
-    // 中心亮点也适当变大
+    // 绘制中心亮点
     painter->setBrush(QBrush(Qt::white));
     painter->setPen(Qt::NoPen);
     painter->drawEllipse(-2, -2, 4, 4);
