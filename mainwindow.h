@@ -2,9 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "player.h"
 
 
 class Menu;
+class Choose;
 class GameWidget;
 
 namespace Ui {
@@ -20,14 +22,16 @@ public:
     ~MainWindow();
 
 private slots:
-    void showGameScreen();
+    void showGameScreen(Player::CharacterType character);
     void showMenuScreen();
+    void showChooseScreen();
     void exitApplication();
 
 private:
     Ui::MainWindow *ui;
     Menu *menuWidget;
     GameWidget *gameWidget;
+    Choose *chooseWidget;
 };
 
 #endif // MAINWINDOW_H

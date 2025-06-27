@@ -17,6 +17,7 @@
 #include "settings.h"
 #include "upgradewidget.h"
 #include "coin.h"
+#include "player.h"
 
 namespace Ui {
 class GameWidget;
@@ -31,6 +32,7 @@ public:
     ~GameWidget();
     
     void startGame();
+    void setCharacter(Player::CharacterType type);
 
 signals:
     void backToMenuRequested();
@@ -70,7 +72,7 @@ private slots:
     void onUpgradeSelected(UpgradeWidget::UpgradeType type);
 
 private:
-    Player::CharacterType m_selectedCharacter = Player::Doctor; // 在这里选择你想测试的角色
+    Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
     void setupAudio();
     void connectActions();

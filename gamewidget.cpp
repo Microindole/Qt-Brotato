@@ -38,6 +38,7 @@ GameWidget::GameWidget(QWidget *parent)
     , gameRunning(false)
     , gamePaused(false)
     , frameCount(0)
+    , m_selectedCharacter(Player::AllRounder)
     , gameInitialized(false)
 {
     ui->setupUi(this);
@@ -162,4 +163,9 @@ void GameWidget::restartGame()
     gameRunning = true;
     startBackgroundMusic(); 
     updateUI();
+}
+
+void GameWidget::setCharacter(Player::CharacterType type)
+{
+    m_selectedCharacter = type;
 }
