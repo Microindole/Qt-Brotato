@@ -23,10 +23,10 @@ void GameWidget::updateGame()
 
     movePlayer();
 
-    for (Enemy *enemy : enemies) {
+    for (Enemy *enemy : std::as_const(enemies)) {
         enemy->moveTowards(player->pos());
     }
-    for (Bullet *bullet : bullets) {
+    for (Bullet *bullet : std::as_const(bullets)) {
         bullet->move();
     }
 
@@ -119,7 +119,7 @@ void GameWidget::shootBullets()
     // 核心修正：将玩家的攻击距离作为初始的最小距离
     float minDistance = player->getAttackRange();
 
-    for (Enemy *enemy : enemies) {
+    for (Enemy *enemy : std::as_const(enemies)) {
         float distance = QLineF(player->pos(), enemy->pos()).length();
         // 寻找在攻击范围内且最近的敌人
         if (distance < minDistance) {
@@ -138,14 +138,14 @@ void GameWidget::shootBullets()
 
 void GameWidget::updateWave()
 {
-    if (enemiesKilled >= wave * 5 + 6) {
+    if (enemiesKilled >= wave * 4 + 8) {
         wave++;
         enemiesKilled = 0;
         
-        int spawnInterval = qMax(600, 2000 - (wave - 1) * 140);
+        int spawnInterval = qMax(600, 2000 - (wave - 1) * 90);
         enemySpawnTimer->setInterval(spawnInterval);
         
-        int shootInterval = qMax(300, 600 - (wave - 1) * 10);
+        int shootInterval = qMax(300, 600 - (wave - 1) * 12);
         shootTimer->setInterval(shootInterval);
     }
 }

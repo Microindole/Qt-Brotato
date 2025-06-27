@@ -89,7 +89,7 @@ void ResourceManager::playSound(const QString& name)
 // 设置音量的公共接口
 void ResourceManager::setSfxVolume(float volume)
 {
-    for(QSoundEffect *effect : qAsConst(m_soundEffectCache)) {
+    for(QSoundEffect *effect : std::as_const(m_soundEffectCache)) {
         effect->setVolume(volume);
     }
 }

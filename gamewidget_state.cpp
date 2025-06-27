@@ -82,7 +82,7 @@ void GameWidget::onHealthBarVisibilityChanged(bool visible)
     }
 
     // 3. 遍历当前屏幕上所有的敌人，并应用新设置
-    for (Enemy *enemy : enemies) {
+    for (Enemy *enemy : std::as_const(enemies)) {
         enemy->showHealthBar = m_showHealthBars;
     }
 }
@@ -141,16 +141,19 @@ void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
     if (player) {
         switch (type) {
             case UpgradeWidget::MaxHealth:
-                player->increaseMaxHealth(20);
+                player->increaseMaxHealth(15);
                 break;
             case UpgradeWidget::AttackPower:
-                player->increaseAttackPower(5);
+                player->increaseAttackPower(4);
                 break;
             case UpgradeWidget::Speed:
-                player->increaseSpeed(0.3f);
+                player->increaseSpeed(0.25f);
                 break;
             case UpgradeWidget::HealthRegen:
-                player->increaseHealthRegen(1.0f);
+                player->increaseHealthRegen(0.8f);
+                break;
+            case UpgradeWidget::Armor:
+                player->increaseArmor(5); // <-- 添加这个case, 每次升级+5点护甲
                 break;
         }
     }

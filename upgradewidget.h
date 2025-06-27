@@ -21,7 +21,8 @@ public:
         MaxHealth,
         AttackPower,
         Speed,
-        HealthRegen
+        HealthRegen,
+        Armor
     };
     Q_ENUM(UpgradeType) // 注册枚举，使其在Qt元对象系统中可用
 

@@ -57,30 +57,30 @@ void Player::initializeStats(CharacterType type)
     switch (type) {
     case AllRounder:
         bodyPixmapPath = ":/images/quanneng.png";
-        maxHealth = 50;
-        attackPower = 10;
-        attackRange = 800;
+        maxHealth = 60;
+        attackPower = 12;
+        attackRange = 400;
         healthRegen = 0;
         break;
     case Fighter: // 斗士：伤害高，血量少
         bodyPixmapPath = ":/images/doushi.png";
-        maxHealth = 40;
-        attackPower = 15; // 伤害更高
-        attackRange = 800;
+        maxHealth = 50;
+        attackPower = 18; // 伤害更高
+        attackRange = 400;
         healthRegen = 0;
         break;
     case Doctor: // 医生：攻击低，自带回血
         bodyPixmapPath = ":/images/doctor.png";
-        maxHealth = 50;
-        attackPower = 7; // 攻击更低
-        attackRange = 800;
+        maxHealth = 60;
+        attackPower = 9; // 攻击更低
+        attackRange = 400;
         healthRegen = 0.5f; // 初始就有生命再生
         break;
     case Bull: // 公牛：血量高，攻击距离短
         bodyPixmapPath = ":/images/gongniu.png";
-        maxHealth = 75; // 血量更高
-        attackPower = 10;
-        attackRange = 400; // 攻击距离更短
+        maxHealth = 90; // 血量更高
+        attackPower = 12;
+        attackRange = 200; // 攻击距离更短
         healthRegen = 0;
         break;
     }
@@ -127,7 +127,7 @@ void Player::advance(int phase)
 
 void Player::takeDamage(int damage)
 {
-    // 护甲减伤
+    // 护甲减伤 (这里的逻辑已经是正确的百分比减伤)
     int reducedDamage = damage * (100 - armor) / 100;
     health -= reducedDamage;
     if (health < 0) {
@@ -159,11 +159,11 @@ void Player::levelUp()
     level++;
     
     // 升级时提升属性
-    maxHealth += 10;        
+    maxHealth += 8;
     health = maxHealth;     
     attackPower += 2;       
-    speed += 0.1f;          
-    increaseAttackRange(1.1f); 
+    speed += 0.08f;
+    attackRange += 10;
 
     // 计算下一级所需经验
     expToNextLevel = calculateExpForLevel(level + 1);
@@ -191,8 +191,8 @@ void Player::regenerateHealth()
 
 int Player::calculateExpForLevel(int targetLevel)
 {
-    // 每级所需经验递增公式：基础经验 * 等级系数
-    return 100 * targetLevel;
+    // 基础经验 + (等级 - 1) * 每级递增经验
+    return 50 + (targetLevel - 1) * 25;
 }
 
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -321,6 +321,15 @@ void Player::increaseSpeed(float amount)
 void Player::increaseHealthRegen(float amount)
 {
     healthRegen += amount;
+}
+
+void Player::increaseArmor(int amount)
+{
+    armor += amount;
+    // 检查并确保护甲值不会超过80
+    if (armor > 80) {
+        armor = 80;
+    }
 }
 
 int Player::getCoins() const

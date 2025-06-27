@@ -16,17 +16,17 @@ Enemy::Enemy(int waveNumber)
     if (type == Type1) {
         pixmap = ResourceManager::instance().getPixmap(":/images/common1.png");
         // 类型1: 基础型，血厚攻高
-        speed = 0.7f + (waveNumber - 1) * 0.05f;
-        damage = 10 + (waveNumber - 1) * 2;
-        maxHealth = 60 + (waveNumber - 1) * 10;
-        experienceValue = 5;
+        speed = 0.8f + (waveNumber - 1) * 0.04f;
+        damage = 8 + (waveNumber - 1) * 1;
+        maxHealth = 40 + (waveNumber - 1) * 6;
+        experienceValue = 8;
     } else { // Type2
         pixmap = ResourceManager::instance().getPixmap(":/images/common2.png");
         // 类型2: 速度更快，但更脆弱
-        speed = 1.0f + (waveNumber - 1) * 0.07f;
-        damage = 8 + (waveNumber - 1) * 2;
-        maxHealth = 45 + (waveNumber - 1) * 8;
-        experienceValue = 3;
+        speed = 1.1f + (waveNumber - 1) * 0.06f;
+        damage = 6 + (waveNumber - 1) * 1;
+        maxHealth = 30 + (waveNumber - 1) * 5;
+        experienceValue = 5;
     }
     health = maxHealth;
 
@@ -34,9 +34,9 @@ Enemy::Enemy(int waveNumber)
     setZValue(0);
     
     // 限制最大属性
-    speed = qMin(speed, 2.5f);
-    damage = qMin(damage, 40);
-    maxHealth = qMin(maxHealth, 200);
+    speed = qMin(speed, 3.0f);
+    damage = qMin(damage, 30);
+    maxHealth = qMin(maxHealth, 350);
     health = maxHealth;
 
     // 使用图片尺寸来定义碰撞区域，并将原点设置在中心

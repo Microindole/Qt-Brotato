@@ -56,7 +56,8 @@ void GameWidget::showUpgradeMenu()
         UpgradeWidget::MaxHealth,
         UpgradeWidget::AttackPower,
         UpgradeWidget::Speed,
-        UpgradeWidget::HealthRegen
+        UpgradeWidget::HealthRegen,
+        UpgradeWidget::Armor
     };
 
     // 打乱所有可能的升级项

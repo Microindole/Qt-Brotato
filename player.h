@@ -51,6 +51,7 @@ public:
     void increaseSpeed(float amount);
     void increaseHealthRegen(float amount);
     void increaseAttackRange(float multiplier);
+    void increaseArmor(int amount);
 
     // 动画相关
     void advance(int phase) override;

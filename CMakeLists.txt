@@ -40,7 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         gamewidget_ui.cpp
         gamewidget_update.cpp
 
-        # 武器选择界面
+        # 选择界面
         choose.h choose.cpp choose.ui
 
         resources.qrc
