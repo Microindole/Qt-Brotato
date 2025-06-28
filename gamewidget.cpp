@@ -163,12 +163,6 @@ void GameWidget::restartGame()
     updateUI();
 }
 
-// void GameWidget::resizeEvent(QResizeEvent *event)
-// {
-//     QWidget::resizeEvent(event);
-//     updateUpgradeIndicators(); // 窗口尺寸变化时，重新计算图标位置
-// }
-
 void GameWidget::setCharacter(Player::CharacterType type)
 {
     m_selectedCharacter = type;
@@ -205,16 +199,31 @@ void GameWidget::onShopItemPurchased(const QString &itemId)
     if (!player) return;
 
     // 根据购买的itemId来应用效果
-    if (itemId == "health_potion") {
-        player->increaseMaxHealth(20);
-    } else if (itemId == "attack_boost") {
-        player->increaseAttackPower(5);
-    } else if (itemId == "speed_boots") {
-        player->increaseSpeed(0.3f);
-    } else if (itemId == "armor_plate") {
+    if (itemId == "heal_potion") {
+        player->heal(25); // 直接治疗
+    } else if (itemId == "glove") {
+        player->increaseAttackPower(4);
+    } else if (itemId == "helmet") {
         player->increaseArmor(5);
+    } else if (itemId == "wings") {
+        player->multiplySpeed(1.10f);
+    } else if (itemId == "scope") {
+        player->increaseAttackRange(50);
+    } else if (itemId == "plant") {
+        player->increaseHealthRegen(0.5f);
+    } else if (itemId == "potato") {
+        player->increaseMaxHealth(3);
+        player->increaseAttackPower(1);
+        player->multiplySpeed(1.02f);
+    } else if (itemId == "glasses") {
+        player->increaseAttackRange(100);
+        player->multiplyAttackPower(0.95f);
+    } else if (itemId == "scared_sausage") {
+        player->multiplySpeed(1.20f);
+        player->multiplyMaxHealth(0.90f);
+    } else if (itemId == "weird_ghost") {
+        player->multiplyExpGain(1.15f);
     }
-    // 您可以在这里为更多道具添加逻辑
 
     // 购买后可以播放一个音效
     ResourceManager::instance().playSound("push");

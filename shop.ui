@@ -14,74 +14,78 @@
    <string>商店</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">/* 主背景 */
+   <string notr="true">/* --- 全局背景，类似暂停菜单 --- */
 QWidget#Shop {
-    background-color: rgba(0, 0, 0, 190);
+    background-color: rgba(0, 0, 0, 200); /* 增加不透明度 */
 }
 
-/* 标题 */
+/* --- 标题 --- */
 QLabel#titleLabel {
     font-size: 52px;
     font-weight: bold;
-    color: #FFD700; /* 金色 */
+    color: #FFD700;
     padding: 15px;
 }
 
-/* 金币显示 */
+/* --- 刷新和金币区域 --- */
+#topBarContainer {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 5px;
+}
 QLabel#coinLabel {
     font-size: 24px;
     font-weight: bold;
     color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
     padding: 8px 15px;
 }
 
-/* 商品卡片 */
+/* --- 商品卡片 --- */
 QWidget#itemCard {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    padding: 15px;
+    background-color: rgba(30, 30, 30, 230); /* 使用暂停菜单的面板颜色 */
+    border: 1px solid rgba(80, 80, 80, 200);
+    border-radius: 15px;
+    padding: 20px;
 }
 
-/* 商品名称 */
+/* --- 字体增大 --- */
 QLabel#itemName {
-    font-size: 18px;
+    font-size: 22px; /* 增大 */
     font-weight: bold;
     color: white;
 }
-
-/* 商品描述 */
 QLabel#itemDesc {
-    font-size: 14px;
+    font-size: 16px; /* 增大 */
     color: #B0B0B0;
 }
 
-/* 购买按钮 */
+/* --- 按钮样式 --- */
 QPushButton {
-    font-size: 16px;
+    font-size: 18px; /* 增大 */
     font-weight: bold;
     color: white;
-    background-color: #28a745; /* 绿色 */
+    background-color: #28a745;
     border: none;
     border-radius: 8px;
-    padding: 10px;
+    padding: 12px;
     margin-top: 10px;
 }
-
 QPushButton:hover {
     background-color: #218838;
 }
-
 QPushButton:disabled {
     background-color: #5A5A5A;
     color: #999;
 }
-
-/* 继续和返回按钮 */
+QPushButton#refreshButton {
+    background-color: #17a2b8; /* 刷新按钮用青色 */
+    padding: 8px 15px;
+}
+QPushButton#refreshButton:hover {
+    background-color: #138496;
+}
 QPushButton#continueButton, QPushButton#backToMenuButton {
-    background-color: #007bff; /* 蓝色 */
+    background-color: #007bff;
     min-height: 40px;
 }
 QPushButton#continueButton:hover, QPushButton#backToMenuButton:hover {
@@ -128,13 +132,29 @@ QPushButton#continueButton:hover, QPushButton#backToMenuButton:hover {
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="coinLabel">
-       <property name="text">
-        <string>💰 0</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
+      <widget class="QWidget" name="topBarContainer" native="true">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QPushButton" name="refreshButton">
+          <property name="toolTip">
+           <string>花费10金币刷新商品</string>
+          </property>
+          <property name="text">
+           <string>🔄 刷新 (10)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="coinLabel">
+          <property name="text">
+           <string>💰 0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -150,7 +170,7 @@ QPushButton#continueButton:hover, QPushButton#backToMenuButton:hover {
     <widget class="QWidget" name="itemsGridContainer" native="true">
      <layout class="QGridLayout" name="gridLayout">
       <property name="spacing">
-       <number>20</number>
+       <number>25</number>
       </property>
      </layout>
     </widget>

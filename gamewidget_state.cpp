@@ -13,11 +13,11 @@ void GameWidget::handleWaveEnd()
     m_isWaveTransition = true;
     pauseBackgroundMusic();
 
-    // 清理场上的子弹和敌人
     qDeleteAll(bullets);
     bullets.clear();
     qDeleteAll(enemies);
     enemies.clear();
+    shopWidget->clearPurchaseHistory();
 
     if (pendingLevelUps > 0) showUpgradeMenu();
     else showShopScreen();
@@ -64,10 +64,10 @@ void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
 {
     if (player) {
         switch (type) {
-        case UpgradeWidget::MaxHealth:   player->increaseMaxHealth(15); break;
+        case UpgradeWidget::MaxHealth:   player->increaseMaxHealth(6); break;
         case UpgradeWidget::AttackPower: player->increaseAttackPower(4); break;
         case UpgradeWidget::Speed:       player->increaseSpeed(0.25f); break;
-        case UpgradeWidget::HealthRegen: player->increaseHealthRegen(0.8f); break;
+        case UpgradeWidget::HealthRegen: player->increaseHealthRegen(0.2f); break;
         case UpgradeWidget::Armor:       player->increaseArmor(5); break;
         }
     }

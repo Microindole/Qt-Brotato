@@ -111,10 +111,10 @@ void UpgradeWidget::onOptionClicked()
 QString UpgradeWidget::upgradeTypeToString(UpgradeType type)
 {
     switch (type) {
-        case MaxHealth:   return "最大生命值 +15";
+        case MaxHealth:   return "最大生命值 +6";
         case AttackPower: return "攻击力 +4";
         case Speed:       return "移动速度 +0.25";
-        case HealthRegen: return "生命恢复 +0.8";
+        case HealthRegen: return "生命恢复 +0.2";
         case Armor:       return "护甲 +5";
         default:          return "未知升级";
     }

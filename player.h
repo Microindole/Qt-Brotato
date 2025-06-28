@@ -47,12 +47,17 @@ public:
     
     // 属性提升方法
     void increaseMaxHealth(int amount);
+    void multiplyMaxHealth(float factor);
     void increaseAttackPower(int amount);
+    void multiplyAttackPower(float factor);
     void increaseSpeed(float amount);
+    void multiplySpeed(float factor);
     void increaseHealthRegen(float amount);
     void increaseAttackRange(float multiplier);
     void increaseArmor(int amount);
+    void multiplyArmor(float factor);
     void healToFull();
+    void multiplyExpGain(float factor);
 
     // 动画相关
     void advance(int phase) override;
@@ -80,8 +85,9 @@ private:
     float healthRegenAccumulator;
     int attackPower;
     int armor;
-    int attackRange = 3000;
+    int attackRange;
     int coins;
+    float expGainMultiplier;
     
     // 动画
     QPixmap bodyPixmap;

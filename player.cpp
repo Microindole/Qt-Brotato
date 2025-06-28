@@ -19,6 +19,7 @@ Player::Player(CharacterType type)
     , attackPower(10)
     , armor(0)
     , coins(0)
+    , expGainMultiplier(1.0f)
     , animationCounter(0.0)
     , facingRight(true)
     , moving(false)
@@ -49,10 +50,22 @@ Player::Player(CharacterType type)
     animationCounter = QRandomGenerator::global()->generateDouble() * 2 * 3.14159;
 }
 
-void Player::healToFull()
+void Player::gainExperience(int exp)
 {
-    health = maxHealth;
+    // 应用经验获取乘数
+    experience += static_cast<int>(exp * expGainMultiplier);
+
+    while (experience >= expToNextLevel) {
+        levelUp();
+    }
 }
+void Player::healToFull() { health = maxHealth; }
+void Player::multiplyMaxHealth(float factor) { maxHealth = static_cast<int>(maxHealth * factor); if(health > maxHealth) health = maxHealth; }
+void Player::multiplyAttackPower(float factor) { attackPower = static_cast<int>(attackPower * factor); }
+void Player::multiplySpeed(float factor) { speed *= factor; }
+void Player::multiplyArmor(float factor) { armor = static_cast<int>(armor * factor); }
+void Player::increaseAttackRange(float amount) { attackRange += amount; }
+void Player::multiplyExpGain(float factor) { expGainMultiplier *= factor; }
 
 // 根据角色类型设置属性
 void Player::initializeStats(CharacterType type)
@@ -144,16 +157,6 @@ void Player::heal(int amount)
     health += amount;
     if (health > maxHealth) {
         health = maxHealth;
-    }
-}
-
-void Player::gainExperience(int exp)
-{
-    experience += exp;
-    
-    // 检查是否可以升级
-    while (experience >= expToNextLevel) {
-        levelUp();
     }
 }
 
@@ -296,14 +299,6 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 void Player::setMoving(bool m)
 {
     moving = m;
-}
-
-void Player::increaseAttackRange(float multiplier)
-{
-    attackRange *= multiplier; // 根据倍数提升攻击距离
-    if (attackRange < 0) {
-        attackRange = 0; // 确保攻击距离不会变成负值
-    }
 }
 
 void Player::increaseMaxHealth(int amount)
