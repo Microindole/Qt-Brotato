@@ -43,7 +43,7 @@ void Shop::setupItems()
     // 在这里定义所有可能在商店中出现的物品
     m_allItems.append({"health_potion", "生命药水", "+20 最大生命值", ":/images/upgrade.png", 50});
     m_allItems.append({"attack_boost", "力量手套", "+5 攻击力", ":/images/upgrade.png", 75});
-    m_allItems.append({"speed_boots", "速度之靴", "+0.3 移动速度", ":/images/upgrade.png", 60});
+    m_allItems.append({"speed_boots", "速度之翼", "+0.3 移动速度", ":/images/upgrade.png", 60});
     m_allItems.append({"armor_plate", "钢板护甲", "+5 护甲", ":/images/upgrade.png", 65});
     // 您可以继续在这里添加更多有趣的道具
 }
