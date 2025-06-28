@@ -18,6 +18,7 @@
 #include "upgradewidget.h"
 #include "coin.h"
 #include "player.h"
+#include "shop.h"
 
 class QMediaPlayer;
 class QAudioOutput;
@@ -80,6 +81,10 @@ private slots:
     void onPlayerLevelUp();
     void onUpgradeSelected(UpgradeWidget::UpgradeType type);
 
+    // 响应商店信号
+    void showShopScreen();
+    void onShopItemPurchased(const QString& itemId);
+
 private:
     Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
@@ -110,6 +115,7 @@ private:
 
     // 金币商店
     void spawnCoin(const QPointF &position);
+    Shop *shopWidget;
 
     Ui::GameWidget *ui;
     

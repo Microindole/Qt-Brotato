@@ -50,6 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         dynamicbackground.h dynamicbackground.cpp
         coin.h coin.cpp
         resourcemanager.h resourcemanager.cpp
+        shop.h shop.cpp shop.ui
 
     )
 

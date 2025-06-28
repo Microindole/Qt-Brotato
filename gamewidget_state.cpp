@@ -20,11 +20,11 @@ void GameWidget::handleWaveEnd()
     enemies.clear();
 
     if (pendingLevelUps > 0) {
-        // 如果有积攒的升级，显示升级界面
+        // 如果有积攒的升级，进入升级界面
         showUpgradeMenu();
     } else {
-        // 否则，显示波次完成界面
-        showWaveCompleteScreen();
+        // 否则，进入商店
+        showShopScreen();
     }
 }
 
@@ -37,6 +37,7 @@ void GameWidget::startNextWave()
 
     hidePauseMenu();
     upgradeWidget->hide();
+    shopWidget->hide();
 
     // 恢复游戏
     gamePaused = false;
@@ -77,8 +78,8 @@ void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
         // 如果还有待处理的升级，再次显示升级菜单
         showUpgradeMenu();
     } else {
-        // 所有升级都处理完毕，开始下一波
-        startNextWave();
+        // 所有升级都处理完毕，进入商店
+        showShopScreen();
     }
 }
 
@@ -153,15 +154,9 @@ void GameWidget::onSfxVolumeChanged(float volume)
 
 void GameWidget::onHealthBarVisibilityChanged(bool visible)
 {
-    // 1. 更新 GameWidget 的全局设置
     m_showHealthBars = visible;
+    if (player) player->showHealthBar = m_showHealthBars;
 
-    // 2. 将新设置应用到玩家
-    if (player) {
-        player->showHealthBar = m_showHealthBars;
-    }
-
-    // 3. 遍历当前屏幕上所有的敌人，并应用新设置
     for (Enemy *enemy : std::as_const(enemies)) {
         enemy->showHealthBar = m_showHealthBars;
     }

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Shop</class>
+ <widget class="QWidget" name="Shop">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>商店</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* 主背景 */
+QWidget#Shop {
+    background-color: rgba(0, 0, 0, 190);
+}
+
+/* 标题 */
+QLabel#titleLabel {
+    font-size: 52px;
+    font-weight: bold;
+    color: #FFD700; /* 金色 */
+    padding: 15px;
+}
+
+/* 金币显示 */
+QLabel#coinLabel {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 8px 15px;
+}
+
+/* 商品卡片 */
+QWidget#itemCard {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+/* 商品名称 */
+QLabel#itemName {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+
+/* 商品描述 */
+QLabel#itemDesc {
+    font-size: 14px;
+    color: #B0B0B0;
+}
+
+/* 购买按钮 */
+QPushButton {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745; /* 绿色 */
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+QPushButton:hover {
+    background-color: #218838;
+}
+
+QPushButton:disabled {
+    background-color: #5A5A5A;
+    color: #999;
+}
+
+/* 继续和返回按钮 */
+QPushButton#continueButton, QPushButton#backToMenuButton {
+    background-color: #007bff; /* 蓝色 */
+    min-height: 40px;
+}
+QPushButton#continueButton:hover, QPushButton#backToMenuButton:hover {
+    background-color: #0069d9;
+}
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout" stretch="0,0,1,0">
+   <property name="spacing">
+    <number>20</number>
+   </property>
+   <property name="leftMargin">
+    <number>50</number>
+   </property>
+   <property name="topMargin">
+    <number>30</number>
+   </property>
+   <property name="rightMargin">
+    <number>50</number>
+   </property>
+   <property name="bottomMargin">
+    <number>30</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="topBarLayout">
+     <item>
+      <widget class="QLabel" name="titleLabel">
+       <property name="text">
+        <string>补给商店</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="coinLabel">
+       <property name="text">
+        <string>💰 0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="itemsGridContainer" native="true">
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing">
+       <number>20</number>
+      </property>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="bottomButtonLayout">
+     <property name="spacing">
+      <number>20</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="backToMenuButton">
+       <property name="text">
+        <string>返回主菜单</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="continueButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>继续下一波</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

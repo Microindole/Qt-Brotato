@@ -12,12 +12,14 @@
 #include <QUrl>
 #include <QDebug>
 #include <QLabel>
+#include "shop.h"
 
 
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::GameWidget)
     , gameScene(nullptr)
+    , shopWidget(nullptr)
     , player(nullptr)
     , pauseWidget(nullptr)
     , settingsWidget(nullptr)
@@ -47,10 +49,12 @@ GameWidget::GameWidget(QWidget *parent)
     pauseWidget = new Pause(this);
     settingsWidget = new Settings(this);
     upgradeWidget = new UpgradeWidget(this);
+    shopWidget = new Shop(this);
     
     pauseWidget->hide();
     settingsWidget->hide();
     upgradeWidget->hide();
+    shopWidget->hide();
 
     connect(gameTimer, &QTimer::timeout, this, &GameWidget::updateGame);
     connect(enemySpawnTimer, &QTimer::timeout, this, &GameWidget::spawnEnemy);
@@ -71,6 +75,10 @@ GameWidget::GameWidget(QWidget *parent)
 
 
     connect(upgradeWidget, &UpgradeWidget::upgradeSelected, this, &GameWidget::onUpgradeSelected);
+
+    connect(shopWidget, &Shop::continueToNextWave, this, &GameWidget::startNextWave);
+    connect(shopWidget, &Shop::backToMenu, this, &GameWidget::onBackToMenu);
+    connect(shopWidget, &Shop::itemPurchased, this, &GameWidget::onShopItemPurchased);
 }
 
 GameWidget::~GameWidget()
@@ -78,7 +86,7 @@ GameWidget::~GameWidget()
     delete ui;
 }
 
-// --- 游戏主流程 ---
+// 游戏主流程
 void GameWidget::startGame()
 {
     if (!gameInitialized) {
@@ -167,9 +175,9 @@ void GameWidget::setCharacter(Player::CharacterType type)
 
 void GameWidget::onEnemyFireBullet(const QPointF& from, const QPointF& to_placeholder)
 {
-    Q_UNUSED(to_placeholder); // 我们不再使用这个参数，因为会直接瞄准玩家
+    Q_UNUSED(to_placeholder);
 
-    if (!player) return; // 如果玩家不存在，则不发射
+    if (!player) return;
 
     // 创建一颗属于敌人的子弹，目标是玩家的当前位置
     // 假设远程怪的基础伤害是 8
@@ -181,3 +189,33 @@ void GameWidget::onEnemyFireBullet(const QPointF& from, const QPointF& to_placeh
     // 播放敌人射击音效
     ResourceManager::instance().playSound("push");
 }
+
+void GameWidget::showShopScreen()
+{
+    // 隐藏升级界面，显示商店
+    upgradeWidget->hide();
+    shopWidget->resize(this->size());
+    shopWidget->move(0, 0);
+    shopWidget->showShop(player); // 显示商店并传入玩家信息
+}
+
+void GameWidget::onShopItemPurchased(const QString &itemId)
+{
+    if (!player) return;
+
+    // 根据购买的itemId来应用效果
+    if (itemId == "health_potion") {
+        player->increaseMaxHealth(20);
+    } else if (itemId == "attack_boost") {
+        player->increaseAttackPower(5);
+    } else if (itemId == "speed_boots") {
+        player->increaseSpeed(0.3f);
+    } else if (itemId == "armor_plate") {
+        player->increaseArmor(5);
+    }
+    // 您可以在这里为更多道具添加逻辑
+
+    // 购买后可以播放一个音效
+    ResourceManager::instance().playSound("push");
+}
+
