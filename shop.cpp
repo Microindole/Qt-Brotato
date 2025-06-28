@@ -26,12 +26,19 @@ Shop::~Shop()
     delete ui;
 }
 
+void Shop::prepareForNewVisit()
+{
+    m_isNewVisit = true;
+    m_purchasedUniqueItems.clear();
+}
+
 void Shop::showShop(Player *player)
 {
     if (!player) return;
     m_player = player;
-    if (m_purchasedUniqueItems.isEmpty()) {
+    if (m_isNewVisit) {
         refreshItemList();
+        m_isNewVisit = false;
     }
     updateCoinDisplay();
     refreshItemList();

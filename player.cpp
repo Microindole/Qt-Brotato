@@ -338,8 +338,9 @@ int Player::getCoins() const
 
 void Player::addCoins(int amount)
 {
-    if (amount > 0) {
-        coins += amount;
+    coins += amount;
+    if (coins < 0) {
+        coins = 0;
     }
 }
 

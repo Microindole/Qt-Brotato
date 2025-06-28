@@ -28,6 +28,7 @@ public:
 
     void showShop(Player* player);
     void clearPurchaseHistory();
+    void prepareForNewVisit();
 
 signals:
     void continueToNextWave();
@@ -50,6 +51,7 @@ private:
     QList<ShopItem> m_allItems;
     Player* m_player;
     QSet<QString> m_purchasedUniqueItems;
+    bool m_isNewVisit;
 };
 
 #endif // SHOP_H

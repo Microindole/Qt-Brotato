@@ -189,6 +189,7 @@ void GameWidget::showShopScreen()
 {
     // 隐藏升级界面，显示商店
     upgradeWidget->hide();
+    shopWidget->prepareForNewVisit();
     shopWidget->resize(this->size());
     shopWidget->move(0, 0);
     shopWidget->showShop(player); // 显示商店并传入玩家信息
