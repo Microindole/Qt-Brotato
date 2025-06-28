@@ -52,6 +52,7 @@ public:
     void increaseHealthRegen(float amount);
     void increaseAttackRange(float multiplier);
     void increaseArmor(int amount);
+    void healToFull();
 
     // 动画相关
     void advance(int phase) override;

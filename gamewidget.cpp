@@ -18,6 +18,7 @@
 GameWidget::GameWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::GameWidget)
+    , m_isWaveTransition(false)
     , gameScene(nullptr)
     , shopWidget(nullptr)
     , player(nullptr)
@@ -62,7 +63,7 @@ GameWidget::GameWidget(QWidget *parent)
     connect(periodicEffectsTimer, &QTimer::timeout, this, &GameWidget::onPeriodicEffects);
     connect(waveTimer, &QTimer::timeout, this, &GameWidget::handleWaveEnd);
 
-    connect(pauseWidget, &Pause::continueGame, this, &GameWidget::startNextWave);
+    connect(pauseWidget, &Pause::continueGame, this, &GameWidget::handleContinueAction);
     connect(pauseWidget, &Pause::restartGame, this, &GameWidget::onRestartFromPause);
     connect(pauseWidget, &Pause::endRun, this, &GameWidget::onEndRun);
     connect(pauseWidget, &Pause::openSettings, this, &GameWidget::onOpenSettings);

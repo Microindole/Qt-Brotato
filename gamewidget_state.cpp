@@ -1,5 +1,4 @@
 #include "gamewidget.h"
-#include "ui_gamewidget.h"
 #include "resourcemanager.h"
 #include <QMessageBox>
 #include <QRandomGenerator>
@@ -11,6 +10,7 @@ void GameWidget::handleWaveEnd()
     enemySpawnTimer->stop();
     shootTimer->stop();
     periodicEffectsTimer->stop();
+    m_isWaveTransition = true;
     pauseBackgroundMusic();
 
     // 清理场上的子弹和敌人
@@ -19,21 +19,22 @@ void GameWidget::handleWaveEnd()
     qDeleteAll(enemies);
     enemies.clear();
 
-    if (pendingLevelUps > 0) {
-        // 如果有积攒的升级，进入升级界面
-        showUpgradeMenu();
-    } else {
-        // 否则，进入商店
-        showShopScreen();
-    }
+    if (pendingLevelUps > 0) showUpgradeMenu();
+    else showShopScreen();
 }
 
 void GameWidget::startNextWave()
 {
     if (!gameRunning) return;
+    m_isWaveTransition = false;
 
     wave++;
     waveTimeLeft = 30;
+
+    qDeleteAll(coins);
+    coins.clear();
+    if (player) player->healToFull();
+
 
     hidePauseMenu();
     upgradeWidget->hide();
@@ -195,4 +196,10 @@ void GameWidget::gameOver()
         QString("土豆兄弟倒下了！\n\n你的分数: %1\n到达波次: %2").arg(score).arg(wave));
 
     emit backToMenuRequested();
+}
+
+void GameWidget::handleContinueAction()
+{
+    if (m_isWaveTransition) startNextWave();
+    else onContinueGame();
 }

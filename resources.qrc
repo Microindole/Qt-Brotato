@@ -29,7 +29,10 @@
     <file>images/menu_background.png</file> <!-- Brotato界面图片 -->
 
     <!-- 地图 -->
-    <file>images/map.png</file> <!-- 地图 -->
+    <file>images/map.png</file> <!-- 默认地图 -->
+    <file>images/map2_cave.png</file> <!-- 洞穴,人物移速更慢,移速*0.8 -->
+    <file>images/map3_desert.png</file> <!-- 沙漠,人物攻击距离更短,攻击距离*0.8 -->
+    <file>images/map4_lava.png</file> <!-- 熔岩,人物会缓慢扣血,生命在生-0.5 -->
 
     <!-- 主菜单背景图片 -->
     <file>images/bg1.png</file>

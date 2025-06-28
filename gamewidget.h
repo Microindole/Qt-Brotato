@@ -57,8 +57,9 @@ private slots:
     void shootBullets();
     void pauseGame();
 
-    void handleWaveEnd();      // 新增：处理一波结束的逻辑
-    void startNextWave();      // 新增：开始下一波
+    void handleWaveEnd();
+    void startNextWave();
+    void handleContinueAction();
 
     // 周期性效果的槽函数
     void onPeriodicEffects();
@@ -156,6 +157,7 @@ private:
     bool gamePaused;
     int frameCount;
     bool gameInitialized;
+    bool m_isWaveTransition;
 };
 
 #endif // GAMEWIDGET_H

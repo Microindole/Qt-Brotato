@@ -3,7 +3,6 @@
 #include <QBrush>
 #include <QPen>
 #include <QRandomGenerator>
-#include <algorithm>
 #include <cmath>
 
 Player::Player(CharacterType type)
@@ -21,7 +20,7 @@ Player::Player(CharacterType type)
     , armor(0)
     , coins(0)
     , animationCounter(0.0)
-    , facingRight(true) // <-- 初始化朝向为右
+    , facingRight(true)
     , moving(false)
 {
 
@@ -48,6 +47,11 @@ Player::Player(CharacterType type)
     }
 
     animationCounter = QRandomGenerator::global()->generateDouble() * 2 * 3.14159;
+}
+
+void Player::healToFull()
+{
+    health = maxHealth;
 }
 
 // 根据角色类型设置属性
