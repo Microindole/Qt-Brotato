@@ -6,7 +6,7 @@
 #include "resourcemanager.h"
 #include <QRandomGenerator>
 #include <QLineF>
-#include <limits>
+#include <QVector2D>
 
 void GameWidget::onPeriodicEffects()
 {
@@ -21,6 +21,16 @@ void GameWidget::updateGame()
 {
     if (!gameRunning || gamePaused || !player) return;
 
+    // 更新波次倒计时
+    if (fpsTimer.elapsed() >= 1000) {
+        waveTimeLeft--;
+        float fps = frameCount / (fpsTimer.elapsed() / 1000.0f);
+        ui->fpsLabel->setText(QString("FPS: %1").arg(qRound(fps)));
+        fpsTimer.restart();
+        frameCount = 0;
+    }
+    frameCount++;
+
     movePlayer();
 
     for (Enemy *enemy : std::as_const(enemies)) {
@@ -32,7 +42,6 @@ void GameWidget::updateGame()
 
     checkCollisions();
     cleanupObjects();
-    updateWave();
     updateUI();
 
     gameScene->advance(); 
@@ -136,19 +145,5 @@ void GameWidget::shootBullets()
         gameScene->addItem(bullet);
         bullets.append(bullet);
         ResourceManager::instance().playSound("shoot");
-    }
-}
-
-void GameWidget::updateWave()
-{
-    if (enemiesKilled >= wave * 4 + 8) {
-        wave++;
-        enemiesKilled = 0;
-        
-        int spawnInterval = qMax(600, 2000 - (wave - 1) * 90);
-        enemySpawnTimer->setInterval(spawnInterval);
-        
-        int shootInterval = qMax(300, 600 - (wave - 1) * 12);
-        shootTimer->setInterval(shootInterval);
     }
 }

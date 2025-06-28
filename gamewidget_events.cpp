@@ -36,4 +36,6 @@ void GameWidget::resizeEvent(QResizeEvent *event)
         pauseWidget->resize(this->size());
         pauseWidget->move(0, 0);
     }
+
+    updateUpgradeIndicators();
 }

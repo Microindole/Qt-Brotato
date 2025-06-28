@@ -54,8 +54,7 @@ void ResourceManager::preloadAssets()
     m_soundEffectCache["gameover"]->setSource(QUrl::fromLocalFile(":/sounds/push.wav"));
 
     m_soundEffectCache["coin"] = new QSoundEffect(this);
-    m_soundEffectCache["coin"]->setSource(QUrl::fromLocalFile(":/sounds/push.wav")); // 假设捡金币音效也是push.wav
-
+    m_soundEffectCache["coin"]->setSource(QUrl::fromLocalFile(":/sounds/push.wav"));
     setSfxVolume(0.3f); // 设置一个默认音效音量
     qInfo() << "ResourceManager: Assets preloaded.";
 }

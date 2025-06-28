@@ -4,19 +4,98 @@
 #include <QMessageBox>
 #include <QRandomGenerator>
 
+void GameWidget::handleWaveEnd()
+{
+    gamePaused = true;
+    gameTimer->stop();
+    enemySpawnTimer->stop();
+    shootTimer->stop();
+    periodicEffectsTimer->stop();
+    pauseBackgroundMusic();
+
+    // 清理场上的子弹和敌人
+    qDeleteAll(bullets);
+    bullets.clear();
+    qDeleteAll(enemies);
+    enemies.clear();
+
+    if (pendingLevelUps > 0) {
+        // 如果有积攒的升级，显示升级界面
+        showUpgradeMenu();
+    } else {
+        // 否则，显示波次完成界面
+        showWaveCompleteScreen();
+    }
+}
+
+void GameWidget::startNextWave()
+{
+    if (!gameRunning) return;
+
+    wave++;
+    waveTimeLeft = 30;
+
+    hidePauseMenu();
+    upgradeWidget->hide();
+
+    // 恢复游戏
+    gamePaused = false;
+    gameTimer->start(16);
+    enemySpawnTimer->start();
+    shootTimer->start();
+    periodicEffectsTimer->start(1000);
+    waveTimer->start(30000);
+
+    startBackgroundMusic();
+    fpsTimer.start();
+    setFocus();
+}
+
+void GameWidget::onPlayerLevelUp()
+{
+    // 不再暂停游戏，只记录升级次数
+    pendingLevelUps++;
+    updateUpgradeIndicators();
+}
+
+void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
+{
+    if (player) {
+        switch (type) {
+        case UpgradeWidget::MaxHealth:   player->increaseMaxHealth(15); break;
+        case UpgradeWidget::AttackPower: player->increaseAttackPower(4); break;
+        case UpgradeWidget::Speed:       player->increaseSpeed(0.25f); break;
+        case UpgradeWidget::HealthRegen: player->increaseHealthRegen(0.8f); break;
+        case UpgradeWidget::Armor:       player->increaseArmor(5); break;
+        }
+    }
+
+    pendingLevelUps--; // 消耗一次升级机会
+    updateUpgradeIndicators();
+
+    if (pendingLevelUps > 0) {
+        // 如果还有待处理的升级，再次显示升级菜单
+        showUpgradeMenu();
+    } else {
+        // 所有升级都处理完毕，开始下一波
+        startNextWave();
+    }
+}
+
 void GameWidget::pauseGame()
 {
     if (!gameRunning) return;
 
-    if (!gamePaused) {
-        gamePaused = true;
-        gameTimer->stop();
-        enemySpawnTimer->stop();
-        shootTimer->stop();
-        periodicEffectsTimer->stop();
-        pauseBackgroundMusic();
-        showPauseMenu();
-    }
+
+    gamePaused = true;
+    gameTimer->stop();
+    enemySpawnTimer->stop();
+    shootTimer->stop();
+    periodicEffectsTimer->stop();
+    waveTimer->stop();
+    pauseBackgroundMusic();
+    showPauseMenu();
+
 }
 
 void GameWidget::onContinueGame()
@@ -25,9 +104,10 @@ void GameWidget::onContinueGame()
         gamePaused = false;
         hidePauseMenu();
         gameTimer->start(16);
-        enemySpawnTimer->start(2000);
-        shootTimer->start(600);
+        enemySpawnTimer->start();
+        shootTimer->start();
         periodicEffectsTimer->start(1000);
+        waveTimer->start(waveTimeLeft * 1000);
         resumeBackgroundMusic();
         fpsTimer.start();
         setFocus();
@@ -120,53 +200,4 @@ void GameWidget::gameOver()
         QString("土豆兄弟倒下了！\n\n你的分数: %1\n到达波次: %2").arg(score).arg(wave));
 
     emit backToMenuRequested();
-}
-
-void GameWidget::onPlayerLevelUp()
-{
-    if (gamePaused) return; // 如果游戏已经暂停（比如在暂停菜单），则不处理升级
-
-    gamePaused = true;
-    gameTimer->stop();
-    enemySpawnTimer->stop();
-    shootTimer->stop();
-    periodicEffectsTimer->stop();
-    pauseBackgroundMusic(); // 升级时暂停背景音乐
-
-    showUpgradeMenu();
-}
-
-void GameWidget::onUpgradeSelected(UpgradeWidget::UpgradeType type)
-{
-    if (player) {
-        switch (type) {
-            case UpgradeWidget::MaxHealth:
-                player->increaseMaxHealth(15);
-                break;
-            case UpgradeWidget::AttackPower:
-                player->increaseAttackPower(4);
-                break;
-            case UpgradeWidget::Speed:
-                player->increaseSpeed(0.25f);
-                break;
-            case UpgradeWidget::HealthRegen:
-                player->increaseHealthRegen(0.8f);
-                break;
-            case UpgradeWidget::Armor:
-                player->increaseArmor(5); // <-- 添加这个case, 每次升级+5点护甲
-                break;
-        }
-    }
-
-    upgradeWidget->hide();
-
-    // 恢复游戏
-    gamePaused = false;
-    gameTimer->start(16);
-    enemySpawnTimer->start(); // 使用它之前的间隔
-    shootTimer->start();      // 使用它之前的间隔
-    periodicEffectsTimer->start(1000);
-    resumeBackgroundMusic();
-    fpsTimer.start();
-    setFocus();
 }

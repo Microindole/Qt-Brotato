@@ -7,8 +7,6 @@ Pause::Pause(QWidget *parent)
     , ui(new Ui::Pause)
 {
     ui->setupUi(this);
-    
-    // 设置焦点策略，确保不会抢夺键盘焦点
     setFocusPolicy(Qt::NoFocus);
     
     // 连接信号和槽
@@ -26,10 +24,7 @@ Pause::~Pause()
 
 void Pause::updateStats(const Player *player)
 {
-    if (!player) {
-        return;
-    }
-
+    if (!player) return;
     // 更新UI上的属性值
     ui->levelValueLabel->setText(QString::number(player->getLevel()));
     ui->maxHealthValueLabel->setText(QString::number(player->getMaxHealth()));
@@ -40,9 +35,28 @@ void Pause::updateStats(const Player *player)
     ui->attackRangeValueLabel->setText(QString::number(player->getAttackRange(), 'f', 1));
 }
 
+void Pause::showForPause()
+{
+    ui->titleLabel->setText("游戏暂停");
+    ui->continueButton->setText("继续");
+    ui->restartButton->show();
+    ui->endRunButton->show();
+    ui->settingsButton->show();
+    ui->backToMenuButton->show();
+}
+
+void Pause::showForWaveComplete(int waveNumber)
+{
+    ui->titleLabel->setText("波次 " + QString::number(waveNumber) + " 完成!");
+    ui->continueButton->setText("开始下一波");
+    ui->restartButton->hide();
+    ui->endRunButton->hide();
+    ui->settingsButton->hide();
+    ui->backToMenuButton->hide();
+}
+
 void Pause::onContinueClicked()
 {
-    this->hide();
     emit continueGame();
 }
 

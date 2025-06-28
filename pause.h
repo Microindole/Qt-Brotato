@@ -7,7 +7,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class Pause; }
 QT_END_NAMESPACE
 
-class Player; // 向前声明Player类
+class Player;
 
 class Pause : public QWidget
 {
@@ -17,7 +17,9 @@ public:
     explicit Pause(QWidget *parent = nullptr);
     ~Pause();
 
-    void updateStats(const Player* player); // 更新属性显示，包括攻击距离
+    void updateStats(const Player* player);
+    void showForPause();
+    void showForWaveComplete(int waveNumber);
 
 private slots:
     void onContinueClicked();

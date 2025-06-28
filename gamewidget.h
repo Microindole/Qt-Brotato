@@ -19,6 +19,14 @@
 #include "coin.h"
 #include "player.h"
 
+class QMediaPlayer;
+class QAudioOutput;
+class Enemy;
+class Bullet;
+class Coin;
+class Settings;
+class QLabel;
+
 namespace Ui {
 class GameWidget;
 }
@@ -47,9 +55,9 @@ private slots:
     void spawnEnemy();
     void shootBullets();
     void pauseGame();
-    void restartGame();
-    void showControls();
-    void showAbout();
+
+    void handleWaveEnd();      // 新增：处理一波结束的逻辑
+    void startNextWave();      // 新增：开始下一波
 
     // 周期性效果的槽函数
     void onPeriodicEffects();
@@ -75,6 +83,8 @@ private slots:
 private:
     Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
+    void restartGame();
+    void updateUpgradeIndicators();
     void setupAudio();
     void connectActions();
     void movePlayer();
@@ -86,6 +96,7 @@ private:
     void showPauseMenu();
     void hidePauseMenu();
     void showUpgradeMenu();
+    void showWaveCompleteScreen();
     
     // 音频函数
     void startBackgroundMusic();
@@ -108,6 +119,7 @@ private:
     QList<Enemy*> enemies;
     QList<Bullet*> bullets;
     QList<Coin*> coins;
+    QList<QLabel*> m_upgradeIndicators;
     Pause *pauseWidget;
     Settings *settingsWidget;
     UpgradeWidget *upgradeWidget;
@@ -117,6 +129,7 @@ private:
     QTimer *enemySpawnTimer;
     QTimer *shootTimer;
     QTimer *periodicEffectsTimer;
+    QTimer *waveTimer;
     QElapsedTimer fpsTimer;
 
     // 音频组件
@@ -127,6 +140,8 @@ private:
     QSet<int> pressedKeys;
     int score;
     int wave;
+    int waveTimeLeft;
+    int pendingLevelUps;
     int enemiesKilled;
     float currentMusicVolume;
     float currentSfxVolume;

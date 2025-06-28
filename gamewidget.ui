@@ -145,6 +145,13 @@ QProgressBar#expBar::chunk {
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="waveTimerLabel">
+        <property name="text">
+         <string>⏳ 30s</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>

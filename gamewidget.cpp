@@ -1,19 +1,17 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 #include "bullet.h"
-#include "enemy.h"
 #include "resourcemanager.h"
 #include <QBrush>
 #include <QPixmap>
 #include <QTimer>
 #include <QMessageBox>
 #include <QRandomGenerator>
-#include <algorithm>
 #include <QLineF>
-#include <limits>
 #include <QAudioOutput>
 #include <QUrl>
 #include <QDebug>
+#include <QLabel>
 
 
 GameWidget::GameWidget(QWidget *parent)
@@ -28,6 +26,7 @@ GameWidget::GameWidget(QWidget *parent)
     , enemySpawnTimer(new QTimer(this))
     , shootTimer(new QTimer(this))
     , periodicEffectsTimer(new QTimer(this))
+    , waveTimer(new QTimer(this))
     , backgroundMusic(nullptr)
     , backgroundAudioOutput(nullptr)
     , score(0)
@@ -57,8 +56,9 @@ GameWidget::GameWidget(QWidget *parent)
     connect(enemySpawnTimer, &QTimer::timeout, this, &GameWidget::spawnEnemy);
     connect(shootTimer, &QTimer::timeout, this, &GameWidget::shootBullets);
     connect(periodicEffectsTimer, &QTimer::timeout, this, &GameWidget::onPeriodicEffects);
+    connect(waveTimer, &QTimer::timeout, this, &GameWidget::handleWaveEnd);
 
-    connect(pauseWidget, &Pause::continueGame, this, &GameWidget::onContinueGame);
+    connect(pauseWidget, &Pause::continueGame, this, &GameWidget::startNextWave);
     connect(pauseWidget, &Pause::restartGame, this, &GameWidget::onRestartFromPause);
     connect(pauseWidget, &Pause::endRun, this, &GameWidget::onEndRun);
     connect(pauseWidget, &Pause::openSettings, this, &GameWidget::onOpenSettings);
@@ -94,30 +94,17 @@ void GameWidget::setupGame()
     gameScene = new QGraphicsScene(this);
     ui->gameView->setScene(gameScene);
     ui->gameView->setRenderHint(QPainter::Antialiasing);
-
-    // 强制视图进行完整刷新，可以消除移动物体时的残影。
     ui->gameView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-
-    //  加载原始的大尺寸背景图片
     QPixmap originalBgPixmap(":/images/map.png"); 
     
     if (originalBgPixmap.isNull()) {
         qWarning() << "错误：无法加载背景图片 ':/images/map.png'。请检查路径和资源文件(.qrc)。";
         gameScene->setBackgroundBrush(QColor(30, 30, 30));
-        // 设置一个默认的游戏区域大小
         gameScene->setSceneRect(0, 0, 1280, 720);
     } else {
-
-        //  定义一个更大的目标尺寸，这会让角色看起来小一些。
-        QSize targetSize(1920, 1080); 
-
-        //  将原始图片缩放到目标尺寸，保持宽高比，使用平滑变换以保证图片质量
+        QSize targetSize(1920, 1080);
         QPixmap scaledBgPixmap = originalBgPixmap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-        //  使用缩放后的小图片作为背景
         gameScene->setBackgroundBrush(QBrush(scaledBgPixmap));
-        
-        //  将游戏场景的大小设置为与缩放后的图片完全相同
         gameScene->setSceneRect(scaledBgPixmap.rect());
     }
 }
@@ -146,18 +133,19 @@ void GameWidget::restartGame()
 
     score = 0;
     wave = 1;
-    enemiesKilled = 0;
+    waveTimeLeft = 30;
+    pendingLevelUps = 0;
+    updateUpgradeIndicators();
     
     player->setPos(gameScene->width() / 2.0, gameScene->height() / 2.0);
     gameScene->addItem(player);
-
-    // 因为场景大小已经合适了，我们直接用 fitInView 就能得到很好的效果
     ui->gameView->fitInView(gameScene->sceneRect(), Qt::KeepAspectRatio);
 
     gameTimer->start(16); // ~60 FPS
     enemySpawnTimer->start(2000);
     shootTimer->start(600);
     periodicEffectsTimer->start(1000);
+    waveTimer->start(30000);
     fpsTimer.start();
     frameCount = 0;
 
@@ -165,6 +153,12 @@ void GameWidget::restartGame()
     startBackgroundMusic(); 
     updateUI();
 }
+
+// void GameWidget::resizeEvent(QResizeEvent *event)
+// {
+//     QWidget::resizeEvent(event);
+//     updateUpgradeIndicators(); // 窗口尺寸变化时，重新计算图标位置
+// }
 
 void GameWidget::setCharacter(Player::CharacterType type)
 {

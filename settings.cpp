@@ -25,7 +25,7 @@ void Settings::setInitialVolumes(float musicVolume, float sfxVolume)
 
     // 将 0.0-1.0 的音量值转换为 0-100 的滑块值
     ui->musicSlider->setValue(static_cast<int>(musicVolume * 100));
-    ui->sfxSlider->setValue(static_cast<int>(sfxVolume * 100)); // <-- 修正了音效音量的计算
+    ui->sfxSlider->setValue(static_cast<int>(sfxVolume * 100));
 
     // 更新对应的文本标签
     ui->musicValueLabel->setText(QString("%1%").arg(ui->musicSlider->value()));
