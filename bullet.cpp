@@ -1,10 +1,11 @@
 #include "bullet.h"
+#include "resourcemanager.h"
 #include <QBrush>
 #include <QPen>
 #include <cmath>
 
 Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos, Owner owner, int damage, float speed)
-    : QGraphicsEllipseItem(-8, -8, 16, 16)
+    : QGraphicsEllipseItem()
     , m_owner(owner)
     , m_speed(speed)
     , m_damage(damage)
@@ -16,6 +17,17 @@ Bullet::Bullet(const QPointF &startPos, const QPointF &targetPos, Owner owner, i
 
     if (distance > 0) {
         velocity = (direction / distance) * speed;
+    }
+
+    // 根据所有者决定是加载图片还是使用默认绘制
+    if (m_owner == EnemyBullet) {
+        m_pixmap = ResourceManager::instance().getPixmap(":/images/m_bullet.png");
+        if (!m_pixmap.isNull()) {
+            qreal scale = 0.1;
+            setRect(-m_pixmap.width() * scale / 2.0, -m_pixmap.height() * scale / 2.0, m_pixmap.width() * scale, m_pixmap.height() * scale);
+        }
+    } else {
+        setRect(-8, -8, 16, 16);
     }
 }
 
@@ -33,8 +45,7 @@ int Bullet::getDamage() const
 
 QRectF Bullet::boundingRect() const
 {
-    // 变大，发光圈半径12
-    return QRectF(-12, -12, 24, 24);
+    return rect().adjusted(-2, -2, 2, 2);
 }
 
 void Bullet::move()
@@ -55,31 +66,26 @@ void Bullet::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 {
     Q_UNUSED(option)
     Q_UNUSED(widget)
+    if (!m_pixmap.isNull()) {
+        painter->drawPixmap(rect(), m_pixmap, m_pixmap.rect());
+    } else {
+        // 玩家的子弹使用原来的绘制逻辑
+        QColor coreColor = Qt::yellow;
+        QColor glowColor = QColor(255, 255, 0, 100);
 
-    QColor coreColor;
-    QColor glowColor;
+        // 绘制发光圈
+        painter->setBrush(QBrush(glowColor));
+        painter->setPen(Qt::NoPen);
+        painter->drawEllipse(rect().adjusted(-4,-4,4,4));
 
-    // 根据所有者选择不同的颜色
-    if (m_owner == PlayerBullet) {
-        coreColor = Qt::yellow;
-        glowColor = QColor(255, 255, 0, 100);
-    } else { // EnemyBullet
-        coreColor = QColor(255, 80, 200); // 敌人的子弹为粉紫色
-        glowColor = QColor(255, 80, 200, 100);
+        // 绘制子弹核心
+        painter->setBrush(QBrush(coreColor));
+        painter->setPen(QPen(coreColor.darker(150), 2));
+        painter->drawEllipse(rect());
+
+        // 绘制中心亮点
+        painter->setBrush(QBrush(Qt::white));
+        painter->setPen(Qt::NoPen);
+        painter->drawEllipse(rect().center(), 2, 2);
     }
-
-    // 绘制发光圈
-    painter->setBrush(QBrush(glowColor));
-    painter->setPen(Qt::NoPen);
-    painter->drawEllipse(-12, -12, 24, 24);
-
-    // 绘制子弹核心
-    painter->setBrush(QBrush(coreColor));
-    painter->setPen(QPen(coreColor.darker(150), 2));
-    painter->drawEllipse(-8, -8, 16, 16);
-
-    // 绘制中心亮点
-    painter->setBrush(QBrush(Qt::white));
-    painter->setPen(Qt::NoPen);
-    painter->drawEllipse(-2, -2, 4, 4);
 }

@@ -45,6 +45,7 @@
     <file>images/redmark.png</file> <!-- 怪标记 -->
     <file>images/treemark.png</file> <!-- 树标记 -->
     <file>images/upgrade.png</file> <!-- 升级标记 -->
+    <file>images/m_bullet.png</file> <!-- 怪物子弹 -->
 
     <!-- 武器 -->
     <file>images/weapon-axe.png</file> <!-- 斧头 -->

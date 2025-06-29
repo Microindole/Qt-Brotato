@@ -31,6 +31,7 @@ private:
     QPointF velocity;
     float m_speed;
     int m_damage;
+    QPixmap m_pixmap;
 };
 
 #endif // BULLET_H
