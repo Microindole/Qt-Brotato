@@ -136,6 +136,7 @@ void GameWidget::spawnBoss()
 
     // 连接Boss的开火信号
     connect(m_boss, &Boss::fireBullet, this, &GameWidget::onEnemyFireBullet);
+    connect(m_boss, &Boss::fireRadialShot, this, &GameWidget::onBossFireRadialShot);
 
     // 将Boss放在屏幕中央
     m_boss->setPos(gameScene->width() / 2, gameScene->height() / 4);
@@ -176,4 +177,26 @@ void GameWidget::shootBullets()
         bullets.append(bullet);
         ResourceManager::instance().playSound("shoot");
     }
+}
+
+void GameWidget::onBossFireRadialShot(int bulletCount)
+{
+    if (!m_boss) return; // 安全检查
+
+    QPointF startPos = m_boss->pos();
+    // 360度 / 子弹数量 = 每颗子弹的角度间隔
+    qreal angleStep = 360.0 / bulletCount;
+
+    for (int i = 0; i < bulletCount; ++i) {
+        qreal angle = i * angleStep;
+        // 计算子弹的目标点（离Boss一段距离即可）
+        QPointF targetPos(startPos.x() + 500 * cos(qDegreesToRadians(angle)),
+                          startPos.y() + 500 * sin(qDegreesToRadians(angle)));
+
+        // 创建子弹，伤害可以设为与Boss普通攻击相同或略低
+        Bullet *bullet = new Bullet(startPos, targetPos, Bullet::EnemyBullet, m_boss->getDamage() / 2);
+        gameScene->addItem(bullet);
+        bullets.append(bullet);
+    }
+    ResourceManager::instance().playSound("enemy_shoot"); // 播放一个音效
 }

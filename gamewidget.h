@@ -89,6 +89,9 @@ private slots:
     void showShopScreen();
     void onShopItemPurchased(const QString& itemId);
 
+    // Boss
+    void onBossFireRadialShot(int bulletCount);
+
 private:
     Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
