@@ -20,7 +20,6 @@ Enemy::Enemy(int waveNumber, QObject* parent)
     type = static_cast<EnemyType>(QRandomGenerator::global()->bounded(4));
 
     // 根据类型加载不同的图片和设置不同的属性
-    // 根据类型初始化属性
     switch(type) {
         case Common_Type1:
             pixmap = ResourceManager::instance().getPixmap(":/images/common1.png");
@@ -46,7 +45,6 @@ Enemy::Enemy(int waveNumber, QObject* parent)
             experienceValue = 12;
             chargeSpeed = baseSpeed * 8.0; // 冲刺速度是基础速度的X倍
 
-            // 设置冲刺逻辑的定时器
             chargeTimer = new QTimer(this);
             chargeTimer->setSingleShot(true); // 定时器只触发一次
             connect(chargeTimer, &QTimer::timeout, this, [this](){
@@ -74,8 +72,10 @@ Enemy::Enemy(int waveNumber, QObject* parent)
             // 设置远程攻击定时器
             rangedAttackTimer = new QTimer(this);
             connect(rangedAttackTimer, &QTimer::timeout, this, [this](){
-                // 当定时器触发，就发射子弹 (目标暂时设为0,0，应在GameWidget中设为玩家位置)
-                // 信号将在 advance() 中根据玩家位置发射
+                if (!scene()) return;
+                emit fireBullet(pos(), QPointF());
+                // 为下一次射击重新启动计时器
+                rangedAttackTimer->start(QRandomGenerator::global()->bounded(2500, 4000));
             });
             rangedAttackTimer->start(QRandomGenerator::global()->bounded(100, 500)); // 随机的攻击间隔
             break;
@@ -171,12 +171,6 @@ void Enemy::advance(int phase)
         // 当冷却结束且计时器不活动时，进入准备状态
         chargeState = Preparing;
         chargeTimer->start(500); // 准备0.5秒
-    }
-    // 远程怪的开火逻辑
-    if (type == Ranged && !rangedAttackTimer->isActive()) {
-        QPointF targetPos = scene()->items().isEmpty() ? QPointF(0,0) : scene()->items().first()->pos();
-        emit fireBullet(pos(), targetPos); // 发射信号
-        rangedAttackTimer->start(QRandomGenerator::global()->bounded(2500, 4000)); // 重置计时器
     }
     animationCounter += 0.08;
     update();
