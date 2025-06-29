@@ -8,7 +8,7 @@ Menu::Menu(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // 背景集成代码 
+    // 背景集成代码
     // 创建动态背景控件的实例
     m_backgroundWidget = new DynamicBackgroundWidget(this);
 

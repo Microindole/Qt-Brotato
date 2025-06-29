@@ -1,6 +1,7 @@
 #include "gamewidget.h"
 #include "ui_gamewidget.h"
 #include "enemy.h"
+#include "boss.h"
 #include "bullet.h"
 #include "coin.h"
 #include "resourcemanager.h"
@@ -85,6 +86,14 @@ void GameWidget::movePlayer()
 
 void GameWidget::spawnEnemy()
 {
+    // 如果Boss已存在，则不再刷普通小怪
+    if (m_boss) return;
+
+    // 每3波一个boss
+    if (wave % 2 == 0) {
+        spawnBoss();
+        return;
+    }
     int enemiesToSpawn = 1 + QRandomGenerator::global()->bounded(qMax(1, wave / 3));
     enemiesToSpawn = qMin(enemiesToSpawn, 5);
 
@@ -112,6 +121,27 @@ void GameWidget::spawnEnemy()
         gameScene->addItem(enemy);
         enemies.append(enemy);
     }
+}
+
+void GameWidget::spawnBoss()
+{
+    // 如果已有Boss，则不再生成
+    if (m_boss) return;
+
+    waveTimer->stop();
+    ui->waveTimerLabel->setText(QString("BOSS"));
+
+    m_boss = new Boss(wave, nullptr);
+    m_boss->showHealthBar = m_showHealthBars;
+
+    // 连接Boss的开火信号
+    connect(m_boss, &Boss::fireBullet, this, &GameWidget::onEnemyFireBullet);
+
+    // 将Boss放在屏幕中央
+    m_boss->setPos(gameScene->width() / 2, gameScene->height() / 4);
+
+    gameScene->addItem(m_boss);
+    enemies.append(m_boss);
 }
 
 // 生成金币

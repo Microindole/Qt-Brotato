@@ -7,7 +7,9 @@
 #include <cmath>
 #include <QGraphicsScene>
 
-Enemy::Enemy(int waveNumber)
+Enemy::Enemy(QObject* parent) : QObject(parent), QGraphicsEllipseItem() {}
+
+Enemy::Enemy(int waveNumber, QObject* parent)
     : QObject()
     , QGraphicsEllipseItem()
     , waveLevel(waveNumber)
@@ -42,7 +44,7 @@ Enemy::Enemy(int waveNumber)
             damage = 15 + (waveNumber - 1) * 2; // 冲撞伤害更高
             maxHealth = 70 + (waveNumber - 1) * 8;
             experienceValue = 12;
-            chargeSpeed = baseSpeed * 12.0; // 冲刺速度是基础速度的4倍
+            chargeSpeed = baseSpeed * 8.0; // 冲刺速度是基础速度的X倍
 
             // 设置冲刺逻辑的定时器
             chargeTimer = new QTimer(this);
@@ -51,7 +53,7 @@ Enemy::Enemy(int waveNumber)
                 if (chargeState == Preparing) {
                     chargeState = Charging;
                     if(scene()) chargeTarget = scene()->items().first()->pos();
-                    chargeTimer->start(2000); // 冲刺时间
+                    chargeTimer->start(1500); // 冲刺时间
                 } else if (chargeState == Charging) {
                     chargeState = Cooldown;
                     chargeTimer->start(500); // 冲刺冷却

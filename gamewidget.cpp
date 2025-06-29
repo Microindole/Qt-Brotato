@@ -123,6 +123,7 @@ void GameWidget::restartGame()
     gameRunning = false;
     gamePaused = false;
     upgradeWidget->hide();
+    m_boss = nullptr;
 
     if (player) {
         gameScene->removeItem(player);

@@ -18,7 +18,7 @@ void GameWidget::checkCollisions()
             for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); ++enemyIt) {
                 Enemy* enemy = *enemyIt;
                 if (bullet->collidesWithItem(enemy)) {
-                    enemy->takeDamage(player->getAttackPower()); // 伤害来自玩家
+                    enemy->takeDamage(player->getAttackPower());
                     ResourceManager::instance().playSound("hit");
 
                     // 子弹击中后应被移除
@@ -29,10 +29,10 @@ void GameWidget::checkCollisions()
                     break; // 一颗子弹只击中一个敌人
                 }
             }
-        } else { // bullet->getOwner() == Bullet::EnemyBullet
+        } else {
             // 敌人的子弹 -> 检测与玩家的碰撞
             if (bullet->collidesWithItem(player)) {
-                player->takeDamage(bullet->getDamage()); // 伤害来自子弹自身
+                player->takeDamage(bullet->getDamage());
                 ResourceManager::instance().playSound("hit");
 
                 // 子弹击中后应被移除
@@ -44,13 +44,18 @@ void GameWidget::checkCollisions()
         }
 
         if (!bulletRemoved) {
-            ++bulletIt; // 如果子弹没有被移除，则迭代器前进
+            ++bulletIt;
         }
     }
 
     // 死亡敌人处理
     for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); ) {
         if ((*enemyIt)->isDead()) {
+            bool boss_defeated = false;
+            if (m_boss && *enemyIt == static_cast<Enemy*>(m_boss)) {
+                m_boss = nullptr;
+                boss_defeated = true;
+            }
             player->gainExperience((*enemyIt)->getExperienceValue());
             score += 5;
             enemiesKilled++;
@@ -58,6 +63,12 @@ void GameWidget::checkCollisions()
             gameScene->removeItem(*enemyIt);
             delete *enemyIt;
             enemyIt = enemies.erase(enemyIt);
+
+            if (boss_defeated) {
+                handleWaveEnd();
+                // 因为handleWaveEnd会清空enemies列表，所以直接跳出循环并返回
+                return;
+            }
         } else {
             ++enemyIt;
         }
@@ -65,14 +76,20 @@ void GameWidget::checkCollisions()
 
     // 敌人与玩家近战碰撞
     for (auto enemyIt = enemies.begin(); enemyIt != enemies.end(); ) {
+        Enemy* currentEnemy = *enemyIt;
         if ((*enemyIt)->collidesWithItem(player)) {
             player->takeDamage((*enemyIt)->getDamage());
             ResourceManager::instance().playSound("hit");
 
             // 敌人撞到玩家后死亡
-            gameScene->removeItem(*enemyIt);
-            delete *enemyIt;
-            enemyIt = enemies.erase(enemyIt);
+            if (currentEnemy != m_boss) {
+                gameScene->removeItem(currentEnemy);
+                delete currentEnemy;
+                enemyIt = enemies.erase(enemyIt);
+            } else {
+                // 如果是Boss，它不会消失，所以迭代器正常前进
+                ++enemyIt;
+            }
         } else {
             ++enemyIt;
         }

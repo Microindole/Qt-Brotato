@@ -12,6 +12,7 @@
 #include <QResizeEvent>
 #include "player.h"
 #include "enemy.h"
+#include "boss.h"
 #include "bullet.h"
 #include "pause.h"
 #include "settings.h"
@@ -31,6 +32,8 @@ class QLabel;
 namespace Ui {
 class GameWidget;
 }
+
+class Boss;
 
 class GameWidget : public QWidget
 {
@@ -90,6 +93,7 @@ private:
     Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
     void restartGame();
+    void spawnBoss();
     void updateUpgradeIndicators();
     void setupAudio();
     void connectActions();
@@ -158,6 +162,7 @@ private:
     int frameCount;
     bool gameInitialized;
     bool m_isWaveTransition;
+    Boss* m_boss;
 };
 
 #endif // GAMEWIDGET_H

@@ -8,54 +8,59 @@
 #include <QObject>
 #include <QGraphicsScene>
 
+class QTimer;
+
 class Enemy : public QObject, public QGraphicsEllipseItem
 {
     Q_OBJECT
 
 public:
     enum EnemyType {
-        Common_Type1, // 普通近战1
-        Common_Type2, // 普通近战2
-        Charger,      // 冲刺怪
-        Ranged        // 远程怪
+        Common_Type1,
+        Common_Type2,
+        Charger,
+        Ranged,
+        // 我们会用一个独立的Boss类，所以这里不需要Boss类型
     };
+    Q_ENUM(EnemyType)
 
-    Enemy(int waveNumber = 1);
-    ~Enemy();
-    
+    // 允许派生类调用
+    explicit Enemy(QObject* parent = nullptr);
+    // 为普通小怪保留的构造函数
+    Enemy(int waveNumber, QObject* parent = nullptr);
+    virtual ~Enemy(); // 基类的析构函数应该是虚函数
+
     QRectF boundingRect() const override;
-    
-    void moveTowards(const QPointF &target);
-    int getDamage() const;
+
+    // --- 将这些函数设为虚函数，以便Boss可以重写它们 ---
+    virtual void moveTowards(const QPointF &target);
+    virtual int getDamage() const;
+    virtual void takeDamage(int dmg);
+
     int getExperienceValue() const { return experienceValue; }
-    
-    void takeDamage(int dmg);
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
     bool isDead() const { return health <= 0; }
     bool showHealthBar = true;
-
     EnemyType getType() const { return type; }
-    
+
     void advance(int phase) override;
 
 signals:
-    // 远程怪请求发射子弹时发出此信号
     void fireBullet(const QPointF& from, const QPointF& to);
 
 protected:
+    // paint也应该是虚函数，但QGraphicsItem的paint已经是虚函数了，所以不用显式声明
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
-private:
-    // 状态机，用于冲刺怪
+    // 将成员变量设为 protected，以便派生类(Boss)可以访问
+protected:
+    void setFacingDirection(bool right);
+
     enum ChargeState {
-        Idle,       // 正常移动
-        Preparing,  // 准备冲刺（例如：停顿、变色）
-        Charging,   // 正在冲刺
-        Cooldown    // 冲刺后冷却
+        Idle, Preparing, Charging, Cooldown
     };
 
-    // 基础属性
     EnemyType type;
     float baseSpeed;
     int damage;
@@ -64,23 +69,16 @@ private:
     int waveLevel;
     int experienceValue;
 
-    // 视觉和动画
     QPixmap pixmap;
     double animationCounter;
     bool facingRight = true;
 
-    // 冲刺怪相关
     ChargeState chargeState = Idle;
-    QTimer* chargeTimer;
+    QTimer* chargeTimer = nullptr;
     QPointF chargeTarget;
-    qreal chargeSpeed;
-
-    // 远程怪相关
-    QTimer* rangedAttackTimer;
+    qreal chargeSpeed = 0;
+    QTimer* rangedAttackTimer = nullptr;
     float preferredDistance = 250.0f;
-
-public:
-    void setFacingDirection(bool right); // 新增：设置朝向的方法
 };
 
 #endif // ENEMY_H
