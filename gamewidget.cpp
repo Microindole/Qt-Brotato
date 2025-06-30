@@ -42,7 +42,9 @@ GameWidget::GameWidget(QWidget *parent)
     , gamePaused(false)
     , frameCount(0)
     , m_selectedCharacter(Player::AllRounder)
+    , m_mapInitialized(false)
     , gameInitialized(false)
+
 {
     ui->setupUi(this);
     setFocusPolicy(Qt::StrongFocus);
@@ -104,18 +106,6 @@ void GameWidget::setupGame()
     ui->gameView->setScene(gameScene);
     ui->gameView->setRenderHint(QPainter::Antialiasing);
     ui->gameView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    QPixmap originalBgPixmap(":/images/map.png"); 
-    
-    if (originalBgPixmap.isNull()) {
-        qWarning() << "错误：无法加载背景图片 ':/images/map.png'。请检查路径和资源文件(.qrc)。";
-        gameScene->setBackgroundBrush(QColor(30, 30, 30));
-        gameScene->setSceneRect(0, 0, 1280, 720);
-    } else {
-        QSize targetSize(1920, 1080);
-        QPixmap scaledBgPixmap = originalBgPixmap.scaled(targetSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        gameScene->setBackgroundBrush(QBrush(scaledBgPixmap));
-        gameScene->setSceneRect(scaledBgPixmap.rect());
-    }
 }
 
 void GameWidget::restartGame()
@@ -130,9 +120,35 @@ void GameWidget::restartGame()
         delete player;
         player = nullptr;
     }
-    player = new Player(m_selectedCharacter); // 使用特定角色类型
+    player = new Player(m_selectedCharacter);
     player->showHealthBar = m_showHealthBars;
     connect(player, &Player::levelUpOccurred, this, &GameWidget::onPlayerLevelUp);
+    if (m_mapInitialized) {
+        // 1. 设置地图背景
+        gameScene->setBackgroundBrush(QBrush(ResourceManager::instance().getPixmap(m_currentMapInfo.backgroundPath)));
+        gameScene->setSceneRect(ResourceManager::instance().getPixmap(m_currentMapInfo.backgroundPath).rect());
+
+        // 2. 应用 Buff/Debuff
+        switch(m_currentMapInfo.buffType) {
+        case MapInfo::HpRegenDebuff:
+            player->increaseHealthRegen(m_currentMapInfo.buffValue); // buffValue 是负数
+            break;
+        case MapInfo::SpeedDebuff:
+            player->multiplySpeed(m_currentMapInfo.buffValue); // buffValue 是 0.8
+            break;
+        case MapInfo::AttackRangeDebuff:
+            player->multiplyAttackRange(m_currentMapInfo.buffValue); // buffValue 是 0.8
+            qWarning() << "AttackRangeDebuff not yet implemented in Player class!";
+            break;
+        case MapInfo::None:
+        default:
+            break;
+        }
+    } else {
+        // 默认地图
+        gameScene->setBackgroundBrush(QBrush(ResourceManager::instance().getPixmap(":/images/map.png")));
+        gameScene->setSceneRect(ResourceManager::instance().getPixmap(":/images/map.png").rect());
+    }
 
     qDeleteAll(enemies);
     enemies.clear();
@@ -162,11 +178,6 @@ void GameWidget::restartGame()
     gameRunning = true;
     startBackgroundMusic(); 
     updateUI();
-}
-
-void GameWidget::setCharacter(Player::CharacterType type)
-{
-    m_selectedCharacter = type;
 }
 
 void GameWidget::onEnemyFireBullet(const QPointF& from, const QPointF& to_placeholder)
@@ -229,5 +240,13 @@ void GameWidget::onShopItemPurchased(const QString &itemId)
 
     // 购买后可以播放一个音效
     ResourceManager::instance().playSound("push");
+}
+
+void GameWidget::prepareGame(Player::CharacterType character, const MapInfo &mapInfo)
+{
+    m_selectedCharacter = character;
+    m_currentMapInfo = mapInfo;
+    m_mapInitialized = true;
+    qDebug() << "Game prepared with map:" << m_currentMapInfo.name << "and character:" << m_selectedCharacter;
 }
 

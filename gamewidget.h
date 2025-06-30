@@ -20,6 +20,7 @@
 #include "coin.h"
 #include "player.h"
 #include "shop.h"
+#include "gamedata.h"
 
 class QMediaPlayer;
 class QAudioOutput;
@@ -44,7 +45,7 @@ public:
     ~GameWidget();
     
     void startGame();
-    void setCharacter(Player::CharacterType type);
+    void prepareGame(Player::CharacterType character, const MapInfo& mapInfo);
 
 signals:
     void backToMenuRequested();
@@ -93,7 +94,6 @@ private slots:
     void onBossFireRadialShot(int bulletCount);
 
 private:
-    Player::CharacterType m_selectedCharacter; // 测试角色
     void setupGame();
     void restartGame();
     void spawnBoss();
@@ -166,6 +166,9 @@ private:
     bool gameInitialized;
     bool m_isWaveTransition;
     Boss* m_boss;
+    Player::CharacterType m_selectedCharacter;
+    MapInfo m_currentMapInfo;
+    bool m_mapInitialized;
 };
 
 #endif // GAMEWIDGET_H

@@ -58,6 +58,7 @@ public:
     void multiplyArmor(float factor);
     void healToFull();
     void multiplyExpGain(float factor);
+    void multiplyAttackRange(float factor);
 
     // 动画相关
     void advance(int phase) override;

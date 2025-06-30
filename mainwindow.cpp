@@ -19,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     gameWidget = new GameWidget(this);
     chooseWidget = new Choose(this);
 
-    // 添加到 StackedWidget
     ui->stackedWidget->addWidget(menuWidget);
     ui->stackedWidget->addWidget(chooseWidget);
     ui->stackedWidget->addWidget(gameWidget);
@@ -27,32 +26,23 @@ MainWindow::MainWindow(QWidget *parent)
     // 连接信号
     // 从菜单到角色选择
     connect(menuWidget, &Menu::startGameRequested, this, &MainWindow::showChooseScreen);
-    // 从角色选择到游戏
-    connect(chooseWidget, &Choose::characterSelected, this, &MainWindow::showGameScreen);
-    // 从角色选择返回菜单
+    // 从角色地图选择到游戏
+    connect(chooseWidget, &Choose::selectionConfirmed, this, &MainWindow::startGameFromSelection);
+    // 从选择返回菜单
     connect(chooseWidget, &Choose::backToMenuRequested, this, &MainWindow::showMenuScreen);
     // 从游戏返回菜单
     connect(gameWidget, &GameWidget::backToMenuRequested, this, &MainWindow::showMenuScreen);
     // 退出应用
     connect(menuWidget, &Menu::exitGameRequested, this, &MainWindow::exitApplication);
 
-    // 默认显示菜单
-    showMenuScreen();
 
-    // 设置窗口为全屏显示
+    showMenuScreen();
     showFullScreen();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::showGameScreen(Player::CharacterType character)
-{
-    gameWidget->setCharacter(character);
-    ui->stackedWidget->setCurrentWidget(gameWidget);
-    gameWidget->startGame();
 }
 
 void MainWindow::showMenuScreen()
@@ -68,4 +58,13 @@ void MainWindow::showChooseScreen()
 void MainWindow::exitApplication()
 {
     QApplication::quit();
+}
+
+void MainWindow::startGameFromSelection()
+{
+    Player::CharacterType chosenChar = GameData::instance().selectedCharacter;
+    MapInfo chosenMap = GameData::instance().selectedMap;
+    gameWidget->prepareGame(chosenChar, chosenMap);
+    ui->stackedWidget->setCurrentWidget(gameWidget);
+    gameWidget->startGame();
 }

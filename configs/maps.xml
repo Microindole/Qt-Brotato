@@ -1,0 +1,8 @@
+<maps>
+    <!-- 默认地图 -->
+    <map key="default" name="标准地图" dlc="false" background=":/images/map.png" description="一片宁静的土地，一切都恰到好处。" buff="none"/>
+    <!-- DLC 地图，对应 resources.qrc 中的注释 -->
+    <map key="lava" name="熔岩之地" dlc="true" background=":/images/map4_lava.png" description="环境恶劣，你的生命恢复速度降低 0.5/秒。" buff="hp_regen_debuff_0.5"/>
+    <map key="desert" name="无尽沙漠" dlc="true" background=":/images/map3_desert.png" description="酷热和沙尘限制了视野，你的攻击距离缩短 20%。" buff="range_debuff_0.2"/>
+    <map key="cave" name="阴暗洞穴" dlc="true" background=":/images/map2_cave.png" description="地形复杂，你的移动速度降低 20%。" buff="speed_debuff_0.2"/>
+</maps>

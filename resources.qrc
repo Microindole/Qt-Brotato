@@ -65,5 +65,7 @@
     <file>images/item-Wings.png</file> <!-- 速度之翼 -->
     <file>images/item-Potato.png</file> <!-- 土豆：每种属性都略微提升 -->
 
+    <file>configs/maps.xml</file>
+
 </qresource>
 </RCC>

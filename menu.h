@@ -4,15 +4,16 @@
 #include <QWidget>
 #include <QTimer>
 #include <QPainter>
+#include <QPushButton>
 #include <cmath>
 
 #include "dynamicbackground.h"
 
 
-namespace Ui {
-class Menu;
-}
+namespace Ui {class Menu;}
 class QShowEvent;
+class PaymentManager;
+class QCheckBox;
 
 
 class AnimatedCharacterWidget : public QWidget
@@ -85,9 +86,24 @@ signals:
     void startGameRequested();
     void exitGameRequested();
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
+private slots:
+    // 新增槽函数，用于处理购买按钮点击
+    void onPurchaseDlcClicked();
+    // 新增槽函数，用于处理支付结果
+    void onPurchaseSuccess(const QString& dlcId);
+    void onPurchaseFailed(const QString& reason);
+    void onDlcSwitchToggled(bool checked);
+
 private:
     Ui::Menu *ui;
     DynamicBackgroundWidget *m_backgroundWidget;
+    PaymentManager *m_paymentManager;
+    QPushButton *m_dlcButton;       // DLC 购买按钮
+    QCheckBox *m_dlcSwitch;         // DLC 开关
+    void updateDlcUi();
 };
 
 #endif // MENU_H

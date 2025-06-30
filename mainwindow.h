@@ -22,10 +22,10 @@ public:
     ~MainWindow();
 
 private slots:
-    void showGameScreen(Player::CharacterType character);
     void showMenuScreen();
     void showChooseScreen();
     void exitApplication();
+    void startGameFromSelection();
 
 private:
     Ui::MainWindow *ui;

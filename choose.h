@@ -2,7 +2,10 @@
 #define CHOOSE_H
 
 #include <QWidget>
-#include "player.h" // 包含Player头文件以使用角色类型枚举
+#include <QMap>
+#include "player.h"
+#include "gamedata.h"
+
 
 namespace Ui {
 class Choose;
@@ -17,13 +20,26 @@ public:
     ~Choose();
 
 signals:
-    // 当一个角色被选择时，发出此信号，并携带角色类型
-    void characterSelected(Player::CharacterType type);
-    // 当点击返回按钮时，发出此信号
     void backToMenuRequested();
+    void selectionConfirmed();
+
+protected:
+    void showEvent(QShowEvent *event) override;
+
+private slots:
+    void onConfirmClicked();
+    void onCharacterButtonClicked(Player::CharacterType type);
+    void onMapButtonClicked(const QString& mapKey);
 
 private:
+    void loadAndSetupMaps();
+    void setupMapSelectionUI();
+    void updateMapDetails(const QString& mapKey);
+
     Ui::Choose *ui;
+    QMap<QString, MapInfo> m_availableMaps;
+    QString m_selectedMapKey;
+    Player::CharacterType m_selectedCharacter;
 };
 
 #endif // CHOOSE_H

@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Multimedia )
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia )
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Multimedia Network)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Multimedia Network)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -28,19 +28,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         player.h player.cpp
         menu.ui menu.h menu.cpp
         gamewidget.ui gamewidget.h
-        
-        # 主游戏逻辑文件
         gamewidget.cpp
-        
-        # 新拆分出来的文件
         gamewidget_audio.cpp
         gamewidget_collisions.cpp
         gamewidget_events.cpp
         gamewidget_state.cpp
         gamewidget_ui.cpp
         gamewidget_update.cpp
-
-        # 选择界面
         choose.h choose.cpp choose.ui
 
         resources.qrc
@@ -53,6 +47,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         shop.h shop.cpp shop.ui
         payment_manager.h payment_manager.cpp
         boss.h boss.cpp
+        gamedata.h
+
 
 
     )
@@ -73,7 +69,7 @@ endif()
 target_link_libraries(brotato PRIVATE
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Multimedia
-  # Qt${QT_VERSION_MAJOR}::WebEngineWidgets
+  Qt${QT_VERSION_MAJOR}::Network
 )
 
 

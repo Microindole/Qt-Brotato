@@ -331,6 +331,11 @@ void Player::increaseArmor(int amount)
     }
 }
 
+void Player::multiplyAttackRange(float factor)
+{
+    attackRange = static_cast<int>(attackRange * factor);
+}
+
 int Player::getCoins() const
 {
     return coins;
