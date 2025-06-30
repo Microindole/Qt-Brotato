@@ -32,12 +32,11 @@ private slots:
     void onMapButtonClicked(const QString& mapKey);
 
 private:
-    void loadAndSetupMaps();
-    void setupMapSelectionUI();
+    void setupMapButtons();
     void updateMapDetails(const QString& mapKey);
 
     Ui::Choose *ui;
-    QMap<QString, MapInfo> m_availableMaps;
+    QMap<QString, MapInfo> m_allMaps;
     QString m_selectedMapKey;
     Player::CharacterType m_selectedCharacter;
 };

@@ -30,13 +30,23 @@ void ResourceManager::preloadAssets()
 {
     qInfo() << "ResourceManager: Preloading assets...";
 
-    // 预加载并缓存缩放后的背景图，解决启动卡顿
-    QPixmap originalBg(":/images/map.png");
-    if (!originalBg.isNull()) {
-        QPixmap scaledBg = originalBg.scaled(1920, 1080, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        m_pixmapCache[":/images/map.png"] = scaledBg;
-    } else {
-        qWarning() << "ResourceManager: Failed to preload background map.";
+    // 定义所有需要预加载的地图图片路径
+    const QStringList mapPaths = {
+        ":/images/map.png",
+        ":/images/map2_cave.png",
+        ":/images/map3_desert.png",
+        ":/images/map4_lava.png"
+    };
+
+    // 循环遍历并预加载所有地图
+    for (const QString& path : mapPaths) {
+        QPixmap originalMap(path);
+        if (!originalMap.isNull()) {
+            // 将原始大小的图片存入缓存
+            m_pixmapCache[path] = originalMap;
+        } else {
+            qWarning() << "ResourceManager: Failed to preload map:" << path;
+        }
     }
 
     // 预加载所有音效

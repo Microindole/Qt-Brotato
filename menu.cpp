@@ -90,6 +90,8 @@ void Menu::onPurchaseSuccess(const QString& dlcId)
     GameData::instance().dlc1_purchased = true;
     GameData::instance().dlc1_active = true;
     updateDlcUi();
+
+    qDebug() << "[Menu] onPurchaseSuccess: dlc1_active is now" << GameData::instance().dlc1_active;
 }
 
 void Menu::onPurchaseFailed(const QString& reason)

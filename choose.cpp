@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QXmlStreamReader>
 #include <QVBoxLayout>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QPushButton>
 #include <QMessageBox>
 #include <QDebug>
@@ -17,18 +17,47 @@ Choose::Choose(QWidget *parent)
     , m_selectedCharacter(Player::AllRounder)
 {
     ui->setupUi(this);
-    // 注册自定义类型，以便在信号槽中使用
     qRegisterMetaType<MapInfo>("MapInfo");
 
-    // 角色选择
+    // 连接角色选择按钮
     connect(ui->allrounderButton, &QPushButton::clicked, this, [=](){ onCharacterButtonClicked(Player::AllRounder); });
     connect(ui->fighterButton, &QPushButton::clicked, this, [=](){ onCharacterButtonClicked(Player::Fighter); });
     connect(ui->doctorButton, &QPushButton::clicked, this, [=](){ onCharacterButtonClicked(Player::Doctor); });
     connect(ui->bullButton, &QPushButton::clicked, this, [=](){ onCharacterButtonClicked(Player::Bull); });
 
-    // 连接确认返回按钮的信号
+    connect(ui->mapButton_default, &QPushButton::clicked, this, [=](){ onMapButtonClicked("default"); });
+    connect(ui->mapButton_lava, &QPushButton::clicked, this, [=](){ onMapButtonClicked("lava"); });
+    connect(ui->mapButton_desert, &QPushButton::clicked, this, [=](){ onMapButtonClicked("desert"); });
+    connect(ui->mapButton_cave, &QPushButton::clicked, this, [=](){ onMapButtonClicked("cave"); });
+
+    // 连接确认和返回按钮
     connect(ui->confirmButton, &QPushButton::clicked, this, &Choose::onConfirmClicked);
     connect(ui->backButton, &QPushButton::clicked, this, &Choose::backToMenuRequested);
+
+    QFile file(":/configs/maps.xml");
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QXmlStreamReader xml(&file);
+        while (xml.readNextStartElement()) {
+            if (xml.name().toString() == "map") {
+                MapInfo map;
+                map.key = xml.attributes().value("key").toString();
+                map.name = xml.attributes().value("name").toString();
+                map.description = xml.attributes().value("description").toString();
+                map.backgroundPath = xml.attributes().value("background").toString();
+
+                // Simplified buff parsing
+                QString buffStr = xml.attributes().value("buff").toString();
+                if (buffStr.startsWith("hp_regen_debuff")) map.buffType = MapInfo::HpRegenDebuff, map.buffValue = -0.5f;
+                else if (buffStr.startsWith("range_debuff")) map.buffType = MapInfo::AttackRangeDebuff, map.buffValue = 0.8f;
+                else if (buffStr.startsWith("speed_debuff")) map.buffType = MapInfo::SpeedDebuff, map.buffValue = 0.8f;
+
+                m_allMaps.insert(map.key, map);
+            }
+        }
+        file.close();
+    } else {
+        qWarning() << "CRITICAL: Could not open maps.xml!";
+    }
 }
 
 Choose::~Choose()
@@ -36,107 +65,38 @@ Choose::~Choose()
     delete ui;
 }
 
-// 当窗口每次显示时，都重新加载地图，以确保DLC状态是最新的
 void Choose::showEvent(QShowEvent *event)
 {
+    qDebug() << "[Choose] showEvent: dlc1_active is" << GameData::instance().dlc1_active;
+    // 首先调用基类的 showEvent，这是个好习惯
     QWidget::showEvent(event);
-    loadAndSetupMaps();
+    setupMapButtons();
 }
 
-void Choose::loadAndSetupMaps()
+void Choose::setupMapButtons()
 {
-    m_availableMaps.clear();
-    m_selectedMapKey.clear();
-    QFile file(":/configs/maps.xml");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning() << "错误：无法打开 maps.xml";
-        return;
-    }
+    bool dlc_is_active = GameData::instance().dlc1_active;
 
-    QXmlStreamReader xml(&file);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qWarning("错误：无法打开资源文件 ':/configs/maps.xml'。将只使用硬编码的默认地图。");
-        // 提供一个备用逻辑，即使没有xml也能玩默认地图
-        MapInfo defaultMap;
-        defaultMap.key = "default";
-        defaultMap.name = "标准地图";
-        defaultMap.description = "一片宁静的土地，一切都恰到好处。";
-        defaultMap.backgroundPath = ":/images/map.png";
-        m_availableMaps.insert(defaultMap.key, defaultMap);
-    } else {
-        QXmlStreamReader xml(&file);
-        while (xml.readNextStartElement()) {
-            if (xml.name().toString() == "map") {
-                bool isDlcMap = xml.attributes().value("dlc").toString() == "true";
-                if (isDlcMap && !GameData::instance().dlc1_active) {
-                    xml.skipCurrentElement();
-                    continue;
-                }
-                MapInfo map;
-                map.key = xml.attributes().value("key").toString();
-                map.name = xml.attributes().value("name").toString();
-                map.description = xml.attributes().value("description").toString();
-                map.backgroundPath = xml.attributes().value("background").toString();
-                QString buffStr = xml.attributes().value("buff").toString();
-                if (buffStr == "hp_regen_debuff_0.5") {
-                    map.buffType = MapInfo::HpRegenDebuff; map.buffValue = -0.5f;
-                } else if (buffStr == "range_debuff_0.2") {
-                    map.buffType = MapInfo::AttackRangeDebuff; map.buffValue = 0.8f;
-                } else if (buffStr == "speed_debuff_0.2") {
-                    map.buffType = MapInfo::SpeedDebuff; map.buffValue = 0.8f;
-                }
-                m_availableMaps.insert(map.key, map);
-            }
+    // Iterate through all known maps and set visibility
+    for (const auto& mapKey : m_allMaps.keys()) {
+        QPushButton* button = findChild<QPushButton*>("mapButton_" + mapKey);
+        if (!button) {
+            qWarning() << "Could not find button for map:" << mapKey;
+            continue;
         }
-        file.close();
+
+        bool isDlcMap = (mapKey != "default"); // A simple check if the map is DLC
+
+        // The core logic: show if it's not a DLC map, OR if DLC is active
+        button->setVisible(!isDlcMap || dlc_is_active);
     }
 
-    file.close();
-
-    setupMapSelectionUI();
-
-    if (m_availableMaps.isEmpty()) {
-        // 如果没有任何地图可选（例如XML文件损坏且没DLC）
-        ui->mapPreviewLabel->setText("无可用地图");
-        ui->mapDescriptionLabel->setText("错误：找不到任何地图信息！");
-        m_selectedMapKey.clear();
-    } else if (m_availableMaps.count() == 1) {
-        // 如果只有一个地图（通常是默认地图）
-        ui->mapSelectionContainer->setVisible(false); // 隐藏地图按钮容器
-        // 自动选择并显示这个唯一的地图
-        m_selectedMapKey = m_availableMaps.firstKey();
-        updateMapDetails(m_selectedMapKey);
-    } else {
-        // 如果有多个地图
-        ui->mapSelectionContainer->setVisible(true); // 显示地图按钮容器
-        // 模拟点击第一个地图按钮来触发选择和UI更新
-        QLayoutItem* item = ui->mapSelectionContainer->layout()->itemAt(0);
-        if(item && item->widget()) {
-            static_cast<QPushButton*>(item->widget())->click();
-        }
-    }
-}
-
-void Choose::setupMapSelectionUI()
-{
-    if (!ui->mapSelectionContainer->layout()) {
-        ui->mapSelectionContainer->setLayout(new QVBoxLayout());
-    }
-    QLayout* layout = ui->mapSelectionContainer->layout();
-
-    QLayoutItem* item;
-    while ((item = layout->takeAt(0)) != nullptr) {
-        delete item->widget();
-        delete item;
-    }
-
-    for (const auto& mapKey : m_availableMaps.keys()) {
-        const MapInfo& map = m_availableMaps.value(mapKey);
-        QPushButton* mapButton = new QPushButton(map.name, this);
-        mapButton->setCheckable(true);
-        mapButton->setAutoExclusive(true);
-        connect(mapButton, &QPushButton::clicked, this, [=](){ onMapButtonClicked(mapKey); });
-        layout->addWidget(mapButton);
+    // Automatically click the first visible button to show a default selection
+    if (ui->mapButton_default->isVisible()) {
+        ui->mapButton_default->click();
+    } else if (ui->mapButton_lava->isVisible()) {
+        // If default is hidden but DLC is active, click the first DLC map
+        ui->mapButton_lava->click();
     }
 }
 
@@ -153,12 +113,13 @@ void Choose::onMapButtonClicked(const QString& mapKey)
 
 void Choose::updateMapDetails(const QString& mapKey)
 {
-    if (!m_availableMaps.contains(mapKey)) return;
-    const MapInfo& info = m_availableMaps.value(mapKey);
+    if (!m_allMaps.contains(mapKey)) return;
+
+    const MapInfo& info = m_allMaps.value(mapKey);
     ui->mapDescriptionLabel->setText(info.description);
+
     QPixmap pixmap = ResourceManager::instance().getPixmap(info.backgroundPath);
     if (!pixmap.isNull()) {
-        // 2. 将图片缩放到 QLabel 的尺寸，并保持宽高比
         ui->mapPreviewLabel->setPixmap(pixmap.scaled(ui->mapPreviewLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         ui->mapPreviewLabel->setText("无法加载预览图");
@@ -167,14 +128,20 @@ void Choose::updateMapDetails(const QString& mapKey)
 
 void Choose::onConfirmClicked()
 {
-    if (!m_selectedMapKey.isEmpty()) {
-        GameData::instance().selectedMap = m_availableMaps.value(m_selectedMapKey);
-        GameData::instance().selectedCharacter = m_selectedCharacter;
-        emit selectionConfirmed();
-        this->hide();
-    } else {
-        QMessageBox::warning(this, "无可用地图", "没有可用的地图。请检查配置或购买DLC。");
+    if (m_selectedMapKey.isEmpty()) {
+        QMessageBox::warning(this, "选择地图", "请先选择一张地图！");
+        return;
     }
+
+    bool isDlcMap = (m_selectedMapKey != "default");
+
+    // 如果是DLC地图但DLC未激活，则显示警告并阻止继续
+    if (isDlcMap && !GameData::instance().dlc1_active) {
+        QMessageBox::warning(this, "需要DLC", "选择该地图需要购买并启用“地图拓展包”！");
+        return;
+    }
+
+    GameData::instance().selectedMap = m_allMaps.value(m_selectedMapKey);
+    GameData::instance().selectedCharacter = m_selectedCharacter;
+    emit selectionConfirmed();
 }
-
-

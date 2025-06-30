@@ -52,6 +52,8 @@ void MainWindow::showMenuScreen()
 
 void MainWindow::showChooseScreen()
 {
+    qDebug() << "[MainWindow] showChooseScreen: dlc1_active is" << GameData::instance().dlc1_active;
+
     ui->stackedWidget->setCurrentWidget(chooseWidget);
 }
 

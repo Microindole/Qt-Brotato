@@ -57,7 +57,6 @@ void DynamicBackgroundWidget::paintEvent(QPaintEvent *event)
         painter.drawPixmap(targetRect, pixmap, pixmap.rect());
         painter.setOpacity(1.0); // 绘制后重置
     };
-    // ----------------------------------------------------
 
     // 2. 按顺序绘制所有图层
     drawLayer(m_farBackgroundPixmap, 0.25, 10.0, 0.6);  // 远景 (bg2), 移动最慢
