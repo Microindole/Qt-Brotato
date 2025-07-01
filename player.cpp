@@ -179,20 +179,28 @@ void Player::levelUp()
 
 void Player::regenerateHealth()
 {
-    // 如果没有再生属性，或者玩家是满血状态，则不做任何事
-    if (healthRegen <= 0 || health >= maxHealth) {
+    // 如果没有任何再生/腐蚀效果，直接返回
+    if (healthRegen == 0) {
         return;
     }
-    // 将当前的再生值累加到累积器中
+    // 如果是正向回血，但玩家已满血，则不执行
+    if (healthRegen > 0 && health >= maxHealth) {
+        return;
+    }
+
+    // 累加效果值（可以是正数或负数）
     healthRegenAccumulator += healthRegen;
-    // 检查累积器是否至少达到了1.0
-    if (healthRegenAccumulator >= 1.0f) {
-        // 计算可以治疗的整数血量
-        int healAmount = static_cast<int>(healthRegenAccumulator);
-        // 执行治疗
-        heal(healAmount);
-        // 从累积器中减去已经治疗过的整数部分
-        healthRegenAccumulator -= healAmount;
+
+    // 当累加值的绝对值大于等于1时，执行效果
+    if (std::abs(healthRegenAccumulator) >= 1.0f) {
+        // 取出整数部分作为本次要应用的值
+        int effectAmount = static_cast<int>(healthRegenAccumulator);
+
+        // 直接调用heal函数，它可以处理正数（治疗）和负数（伤害）
+        heal(effectAmount);
+
+        // 从累加器中减去已应用的部分
+        healthRegenAccumulator -= effectAmount;
     }
 }
 

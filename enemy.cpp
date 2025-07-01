@@ -23,27 +23,27 @@ Enemy::Enemy(int waveNumber, QObject* parent)
     switch(type) {
         case Common_Type1:
             pixmap = ResourceManager::instance().getPixmap(":/images/common1.png");
-            baseSpeed = 0.8f + (waveNumber - 1) * 0.04f;
-            damage = 8 + (waveNumber - 1) * 1;
-            maxHealth = 40 + (waveNumber - 1) * 6;
-            experienceValue = 8;
+            baseSpeed = 0.8f + (waveNumber - 1) * 0.03f;
+            damage = 8 + (waveNumber - 1) * 0.8;
+            maxHealth = 40 + (waveNumber - 1) * 5;
+            experienceValue = 10;
             break;
 
         case Common_Type2:
             pixmap = ResourceManager::instance().getPixmap(":/images/common2.png");
-            baseSpeed = 1.1f + (waveNumber - 1) * 0.06f;
-            damage = 6 + (waveNumber - 1) * 1;
-            maxHealth = 30 + (waveNumber - 1) * 5;
-            experienceValue = 5;
+            baseSpeed = 1.1f + (waveNumber - 1) * 0.05f;
+            damage = 6 + (waveNumber - 1) * 0.8;
+            maxHealth = 30 + (waveNumber - 1) * 4;
+            experienceValue = 7;
             break;
 
         case Charger:
             pixmap = ResourceManager::instance().getPixmap(":/images/charge.png");
-            baseSpeed = 0.9f + (waveNumber - 1) * 0.05f;
-            damage = 15 + (waveNumber - 1) * 2; // 冲撞伤害更高
-            maxHealth = 70 + (waveNumber - 1) * 8;
-            experienceValue = 12;
-            chargeSpeed = baseSpeed * 8.0; // 冲刺速度是基础速度的X倍
+            baseSpeed = 0.9f + (waveNumber - 1) * 0.04f;
+            damage = 15 + (waveNumber - 1) * 1.5; // 冲撞伤害更高
+            maxHealth = 70 + (waveNumber - 1) * 7;
+            experienceValue = 15;
+            chargeSpeed = baseSpeed * 6.0; // 冲刺速度是基础速度的X倍
 
             chargeTimer = new QTimer(this);
             chargeTimer->setSingleShot(true); // 定时器只触发一次
@@ -51,10 +51,10 @@ Enemy::Enemy(int waveNumber, QObject* parent)
                 if (chargeState == Preparing) {
                     chargeState = Charging;
                     if(scene()) chargeTarget = scene()->items().first()->pos();
-                    chargeTimer->start(1500); // 冲刺时间
+                    chargeTimer->start(1200); // 冲刺时间
                 } else if (chargeState == Charging) {
                     chargeState = Cooldown;
-                    chargeTimer->start(500); // 冲刺冷却
+                    chargeTimer->start(800); // 冲刺冷却
                 } else if (chargeState == Cooldown) {
                     chargeState = Idle;
                 }
@@ -64,10 +64,10 @@ Enemy::Enemy(int waveNumber, QObject* parent)
 
         case Ranged:
             pixmap = ResourceManager::instance().getPixmap(":/images/remote.png");
-            baseSpeed = 0.7f + (waveNumber - 1) * 0.03f;
-            damage = 5 + (waveNumber - 1) * 1; // 近战伤害较低
-            maxHealth = 50 + (waveNumber - 1) * 5;
-            experienceValue = 10;
+            baseSpeed = 0.7f + (waveNumber - 1) * 0.02f;
+            damage = 5 + (waveNumber - 1) * 0.7;
+            maxHealth = 50 + (waveNumber - 1) * 4;
+            experienceValue = 12;
 
             // 设置远程攻击定时器
             rangedAttackTimer = new QTimer(this);
@@ -85,8 +85,8 @@ Enemy::Enemy(int waveNumber, QObject* parent)
     setZValue(0);
     
     // 限制最大属性
-    baseSpeed = qMin(baseSpeed, 3.0f);
-    damage = qMin(damage, 30);
+    baseSpeed = qMin(baseSpeed, 2.8f);
+    damage = qMin(damage, 35);
     maxHealth = qMin(maxHealth, 350);
     health = maxHealth;
 
@@ -170,7 +170,7 @@ void Enemy::advance(int phase)
     if (type == Charger && chargeState == Idle && !chargeTimer->isActive()) {
         // 当冷却结束且计时器不活动时，进入准备状态
         chargeState = Preparing;
-        chargeTimer->start(500); // 准备0.5秒
+        chargeTimer->start(600); // 准备0.6秒
     }
     animationCounter += 0.08;
     update();

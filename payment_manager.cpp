@@ -61,25 +61,21 @@ void PaymentManager::handlePaymentUrlReply(QNetworkReply *reply)
         QString paymentUrl = json["paymentUrl"].toString(); // 备用链接
 
         if (!qrCodeBase64.isEmpty()) {
-            // 1. 解码 Base64 数据为图片
+            // 解码 Base64 数据为图片
             QByteArray qrCodeData = QByteArray::fromBase64(qrCodeBase64.toUtf8());
             QPixmap qrPixmap;
             qrPixmap.loadFromData(qrCodeData, "PNG");
-
-            // 2. 创建一个简单的对话框来显示二维码
+            // 创建一个简单的对话框来显示二维码
             QDialog* paymentDialog = new QDialog(m_parentWidget);
             paymentDialog->setWindowTitle("请使用支付宝扫码支付");
             paymentDialog->setFixedSize(350, 420); // 固定大小
 
             QVBoxLayout* layout = new QVBoxLayout(paymentDialog);
-
             QLabel* qrLabel = new QLabel(paymentDialog);
             qrLabel->setPixmap(qrPixmap.scaled(300, 300, Qt::KeepAspectRatio, Qt::SmoothTransformation));
             qrLabel->setAlignment(Qt::AlignCenter);
-
             QLabel* infoLabel = new QLabel("<b>支付成功后，请手动关闭此窗口</b>", paymentDialog);
             infoLabel->setAlignment(Qt::AlignCenter);
-
             QPushButton* browserButton = new QPushButton("在浏览器中打开", paymentDialog);
 
             layout->addWidget(qrLabel);
@@ -87,14 +83,13 @@ void PaymentManager::handlePaymentUrlReply(QNetworkReply *reply)
             layout->addWidget(browserButton);
             paymentDialog->setLayout(layout);
 
-            // 3. 连接备用按钮的点击事件
+            // 连接备用按钮的点击事件
             connect(browserButton, &QPushButton::clicked, [paymentUrl](){
                 QDesktopServices::openUrl(QUrl(paymentUrl));
             });
 
-            // 4. 当对话框关闭时，开始轮询支付状态
+            // 当对话框关闭时，开始轮询支付状态
             connect(paymentDialog, &QObject::destroyed, this, &PaymentManager::startPollingForStatus);
-
             paymentDialog->setAttribute(Qt::WA_DeleteOnClose);
             paymentDialog->show();
 

@@ -29,10 +29,12 @@ protected:
 private slots:
     void onConfirmClicked();
     void onCharacterButtonClicked(Player::CharacterType type);
-    void onMapButtonClicked(const QString& mapKey);
+    // void onMapButtonClicked(const QString& mapKey);
+    void onMapButtonClicked();
 
 private:
-    void setupMapButtons();
+    // void setupMapButtons();
+    void setupInitialState();
     void updateMapDetails(const QString& mapKey);
 
     Ui::Choose *ui;

@@ -90,7 +90,7 @@ void GameWidget::spawnEnemy()
     if (m_boss) return;
 
     // 每3波一个boss
-    if (wave % 2 == 0) {
+    if (wave % 3 == 0) {
         spawnBoss();
         return;
     }

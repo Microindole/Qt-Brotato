@@ -11,10 +11,10 @@ Boss::Boss(int waveNumber, QObject *parent)
 {
     pixmap = ResourceManager::instance().getPixmap(":/images/boss.png");
     baseSpeed = 0.6f + (waveNumber / 10.0f) * 0.1f;
-    damage = 25 + waveNumber;
-    maxHealth = 100 + waveNumber * 50;
+    damage = 25 + waveNumber * 1.8;
+    maxHealth = 200 + waveNumber * 50;
     health = maxHealth;
-    experienceValue = 60 + waveNumber * 10;
+    experienceValue = 80 + waveNumber * 15;
 
     qreal scale = 0.3;
     setRect(-pixmap.width() * scale / 2.0, -pixmap.height() * scale / 2.0, pixmap.width() * scale, pixmap.height() * scale);
@@ -27,13 +27,14 @@ Boss::Boss(int waveNumber, QObject *parent)
 
 void Boss::moveTowards(const QPointF &target)
 {
+    m_playerPosition = target;
     // 根据当前状态决定如何移动
     switch (m_currentState) {
     case State::Chasing:
     {
         QPointF direction = target - pos();
         qreal distance = QLineF(pos(), target).length();
-        if (distance > 200) { // 保持一定距离
+        if (distance > 150) { // 保持一定距离
             setPos(pos() + (direction / distance) * baseSpeed);
         }
         setFacingDirection(direction.x() > 0);
@@ -43,12 +44,8 @@ void Boss::moveTowards(const QPointF &target)
     {
         QPointF direction = m_dashTarget - pos();
         qreal distance = QLineF(pos(), m_dashTarget).length();
-        // 冲锋速度是基础速度的8倍
-        qreal dashSpeed = baseSpeed * 8.0;
-        if (distance < dashSpeed) {
-            setPos(m_dashTarget); // 到达目标点
-            finishDash();
-        } else {
+        qreal dashSpeed = baseSpeed * 5.0;
+        if (distance > 1.0) {
             setPos(pos() + (direction / distance) * dashSpeed);
         }
         break;
@@ -61,20 +58,21 @@ void Boss::moveTowards(const QPointF &target)
 
 void Boss::performAttackCycle()
 {
-    if (m_currentState != State::Chasing) return; // 只有在追击状态下才能发动攻击
+    if (m_currentState != State::Chasing) return;
     if (!m_isEnraged) {
-        // --- 阶段一攻击：三连发 ---
+        // 阶段一攻击：三连发
         m_currentState = State::Attacking;
-        QTimer::singleShot(0, [this]() { emit fireBullet(pos(), scene()->items().first()->pos()); });
-        QTimer::singleShot(200, [this]() { emit fireBullet(pos(), scene()->items().first()->pos()); });
-        QTimer::singleShot(400, [this]() {
-            emit fireBullet(pos(), scene()->items().first()->pos());
-            m_currentState = State::Chasing; // 攻击结束，返回追击状态
-            m_attackCycleTimer->start(3000); // 重置计时器
+        // 始终以缓存的玩家位置为目标
+        QTimer::singleShot(0, [this]() { emit fireBullet(pos(), m_playerPosition); });
+        QTimer::singleShot(250, [this]() { emit fireBullet(pos(), m_playerPosition); });
+        QTimer::singleShot(500, [this]() {
+            emit fireBullet(pos(), m_playerPosition);
+            m_currentState = State::Chasing;
+            m_attackCycleTimer->start(3500);
         });
     } else {
-        // --- 阶段二攻击：冲锋+弹幕 ---
-        startDashAttack(scene()->items().first()->pos());
+        // 阶段二攻击：向玩家最后的位置冲锋
+        startDashAttack(m_playerPosition);
     }
 }
 
@@ -82,8 +80,8 @@ void Boss::startDashAttack(const QPointF &target)
 {
     m_currentState = State::Dashing;
     m_dashTarget = target;
-    // 冲锋计时，1.5秒后强制结束
-    QTimer::singleShot(600, this, &Boss::finishDash);
+    // 冲锋计时，0.8秒后强制结束
+    QTimer::singleShot(800, this, &Boss::finishDash);
 }
 
 void Boss::finishDash()
@@ -92,12 +90,12 @@ void Boss::finishDash()
 
     m_currentState = State::Attacking;
     // 发射弹幕新星信号，例如发射12颗子弹
-    emit fireRadialShot(12);
+    emit fireRadialShot(18);
 
     // 弹幕结束后恢复
     QTimer::singleShot(500, [this]() {
         m_currentState = State::Chasing;
-        m_attackCycleTimer->start(4000);
+        m_attackCycleTimer->start(3000);
     });
 }
 

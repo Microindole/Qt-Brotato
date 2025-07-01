@@ -123,12 +123,24 @@ void GameWidget::restartGame()
     player = new Player(m_selectedCharacter);
     player->showHealthBar = m_showHealthBars;
     connect(player, &Player::levelUpOccurred, this, &GameWidget::onPlayerLevelUp);
-    if (m_mapInitialized) {
-        // 1. 设置地图背景
-        gameScene->setBackgroundBrush(QBrush(ResourceManager::instance().getPixmap(m_currentMapInfo.backgroundPath)));
-        gameScene->setSceneRect(ResourceManager::instance().getPixmap(m_currentMapInfo.backgroundPath).rect());
 
-        // 2. 应用 Buff/Debuff
+    const QSize standardGameSize(1920, 1080);
+
+    QPixmap backgroundPixmap;
+    if (m_mapInitialized) {
+        backgroundPixmap = ResourceManager::instance().getPixmap(m_currentMapInfo.backgroundPath);
+
+        // 检查DLC地图是否加载成功
+        if (backgroundPixmap.isNull()) {
+            qWarning() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+            qWarning() << "CRITICAL: Failed to load map background:" << m_currentMapInfo.backgroundPath;
+            qWarning() << "Falling back to default map. Please check your resources.qrc file!";
+            qWarning() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+            // 加载失败，回退到默认地图
+            backgroundPixmap = ResourceManager::instance().getPixmap(":/images/map.png");
+        }
+
+        // 应用 Buff/Debuff
         switch(m_currentMapInfo.buffType) {
         case MapInfo::HpRegenDebuff:
             player->increaseHealthRegen(m_currentMapInfo.buffValue); // buffValue 是负数
@@ -145,10 +157,16 @@ void GameWidget::restartGame()
             break;
         }
     } else {
-        // 默认地图
-        gameScene->setBackgroundBrush(QBrush(ResourceManager::instance().getPixmap(":/images/map.png")));
-        gameScene->setSceneRect(ResourceManager::instance().getPixmap(":/images/map.png").rect());
+        // 如果游戏从未被prepare, 加载默认地图
+        backgroundPixmap = ResourceManager::instance().getPixmap(":/images/map.png");
     }
+
+    // 将最终确定的图片缩放到标准尺寸，作为背景
+    QPixmap scaledBackground = backgroundPixmap.scaled(standardGameSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    gameScene->setBackgroundBrush(QBrush(scaledBackground));
+
+    // 将场景的逻辑大小设置为标准尺寸，而不是图片的原始尺寸
+    gameScene->setSceneRect(0, 0, standardGameSize.width(), standardGameSize.height());
 
     qDeleteAll(enemies);
     enemies.clear();

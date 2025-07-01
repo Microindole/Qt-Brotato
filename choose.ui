@@ -420,7 +420,7 @@ QLabel.sectionTitleLabel {
       <item>
        <widget class="QPushButton" name="confirmButton">
         <property name="text">
-         <string>确认选择，开始游戏</string>
+         <string>开始游戏</string>
         </property>
        </widget>
       </item>

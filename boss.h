@@ -35,6 +35,7 @@ private:
     QTimer* m_attackCycleTimer;
     bool m_isEnraged; // 狂暴
     QPointF m_dashTarget;
+    QPointF m_playerPosition;
 };
 
 #endif // BOSS_H
