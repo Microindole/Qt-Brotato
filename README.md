@@ -30,6 +30,24 @@
 - **🔺 随机升级系统**: 每次升级时，从随机出现的属性中三选一，打造你独一无二的角色Build。
 - **🛒 波次间商店**: 在每波战斗结束后，使用获得的金币在商店中购买各种强力道具，永久提升你的能力。
 
+
+
+## 📁 模块化架构详解
+
+为了提升代码的可读性、可维护性和可扩展性，本项目采用了高度模块化的设计。每个模块权责分明，并通过Qt的信号与槽机制进行低耦合的通信。
+
+**点击下方链接查看每个模块的详细设计文档：**
+
+- [**📄 1. 总体架构与页面管理 (MainWindow)**](./docs/MAIN_ARCHITECTURE.md)
+- [**📄 2. 核心游戏逻辑 (GameWidget)**](./docs/GAME_LOGIC.md)
+- [**📄 3. 游戏实体设计 (Player, Enemy, Boss)**](./docs/GAME_ENTITIES.md)
+- [**📄 4. UI系统与用户交互 (Menus, Shops, etc.)**](./docs/UI_SYSTEM.md)
+- [**📄 5. 全局单例与管理系统 (ResourceManager, GameData)**](./docs/MANAGEMENT_SYSTEMS.md)
+- [**📄 6. DLC支付系统 (C++/Python 交互)**](./docs/DLC_PAYMENT.md)
+- [**📄 7. Natapp 内网穿透详细教程**](./docs/NATAPP_TUTORIAL.md)
+
+
+
 ## 💡 Qt核心知识点应用详解
 
 本项目旨在全面运用Qt框架的各项核心技术，是检验和巩固Qt学习成果的理想平台。以下是项目中重点运用的Qt知识点：
