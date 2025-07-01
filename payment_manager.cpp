@@ -17,10 +17,14 @@
 const QString YOUR_SERVER_BASE_URL = "http://127.0.0.1:5000";
 
 PaymentManager::PaymentManager(QWidget *parent)
-    : QObject(parent)
+    : QObject(parent), m_networkManager(new QNetworkAccessManager(this))
+    , m_webView(nullptr)
     , m_parentWidget(parent)
+    , m_outTradeNo("")
+    , m_currentDlcId("")
+    , m_pollingTimer(nullptr)
 {
-    m_networkManager = new QNetworkAccessManager(this);
+
 }
 
 PaymentManager::~PaymentManager()

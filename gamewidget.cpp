@@ -11,7 +11,6 @@
 #include <QAudioOutput>
 #include <QUrl>
 #include <QDebug>
-#include <QLabel>
 #include "shop.h"
 
 
