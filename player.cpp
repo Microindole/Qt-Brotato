@@ -76,28 +76,28 @@ void Player::initializeStats(CharacterType type)
         bodyPixmapPath = ":/images/quanneng.png";
         maxHealth = 60;
         attackPower = 12;
-        attackRange = 400;
+        attackRange = 550;
         healthRegen = 0;
         break;
     case Fighter: // 斗士：伤害高，血量少
         bodyPixmapPath = ":/images/doushi.png";
         maxHealth = 50;
         attackPower = 18; // 伤害更高
-        attackRange = 400;
+        attackRange = 550;
         healthRegen = 0;
         break;
     case Doctor: // 医生：攻击低，自带回血
         bodyPixmapPath = ":/images/doctor.png";
         maxHealth = 60;
         attackPower = 9; // 攻击更低
-        attackRange = 400;
+        attackRange = 550;
         healthRegen = 0.5f; // 初始就有生命再生
         break;
     case Bull: // 公牛：血量高，攻击距离短
         bodyPixmapPath = ":/images/gongniu.png";
         maxHealth = 90; // 血量更高
         attackPower = 12;
-        attackRange = 200; // 攻击距离更短
+        attackRange = 350; // 攻击距离更短
         healthRegen = 0;
         break;
     }
