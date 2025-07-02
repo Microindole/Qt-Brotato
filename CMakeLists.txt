@@ -23,6 +23,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(brotato
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        icon.rc
         bullet.h bullet.cpp
         enemy.h enemy.cpp
         player.h player.cpp

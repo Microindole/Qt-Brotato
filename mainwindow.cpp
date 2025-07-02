@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QRandomGenerator>
 #include <cmath>
+#include <QIcon>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->stackedWidget->addWidget(menuWidget);
     ui->stackedWidget->addWidget(chooseWidget);
     ui->stackedWidget->addWidget(gameWidget);
+
+    setWindowIcon(QIcon(":/images/quanneng.png"));
 
     // 连接信号
     // 从菜单到角色选择
