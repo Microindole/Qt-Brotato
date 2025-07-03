@@ -1,1 +1,1 @@
-natapp.exe -authtoken=a5908dcf51ed11af
+natapp.exe -authtoken=fbeafbb71ad8b6f6

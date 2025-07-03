@@ -12,7 +12,7 @@ CORS(app)
 
 payment_statuses = {}
 
-PUBLIC_DOMAIN = "http://e94e666c.natappfree.cc"
+PUBLIC_DOMAIN = "http://brotato.natapp1.cc"
 
 # --- 支付宝配置 (与之前保持一致) ---
 ALIPAY_CONFIG = {
