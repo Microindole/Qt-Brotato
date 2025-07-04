@@ -30,7 +30,7 @@ PaymentManager::~PaymentManager()
     }
 }
 
-// 1. 外部调用此函数开始购买流程
+// 外部调用此函数开始购买流程
 void PaymentManager::purchaseDlc(const QString& dlcId, float price, const QString& subject)
 {
     m_currentDlcId = dlcId;
@@ -50,7 +50,7 @@ void PaymentManager::purchaseDlc(const QString& dlcId, float price, const QStrin
     m_networkManager->post(request, QJsonDocument(requestData).toJson());
 }
 
-// 2. 收到从您服务器返回的支付URL
+// 收到从服务器返回的支付URL
 void PaymentManager::handlePaymentUrlReply(QNetworkReply *reply)
 {
     disconnect(m_networkManager, &QNetworkAccessManager::finished, this, &PaymentManager::handlePaymentUrlReply);
@@ -102,7 +102,7 @@ void PaymentManager::handlePaymentUrlReply(QNetworkReply *reply)
     reply->deleteLater();
 }
 
-// 5. 开始轮询检查支付状态
+// 开始轮询检查支付状态
 void PaymentManager::startPollingForStatus()
 {
     if (m_pollingTimer) {
@@ -131,7 +131,7 @@ void PaymentManager::startPollingForStatus()
     m_pollingTimer->start(3000); // 每3秒查询一次
 }
 
-// 6. 处理支付状态查询结果
+// 处理支付状态查询结果
 void PaymentManager::handlePurchaseStatusReply(QNetworkReply* reply)
 {
     disconnect(m_networkManager, &QNetworkAccessManager::finished, this, &PaymentManager::handlePurchaseStatusReply);
